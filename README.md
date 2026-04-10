@@ -1,6 +1,6 @@
 ![Capa](https://github.com/pedrosoares0/Portal-Tomada-de-Contas/blob/main/imagens/capa-readme.png?raw=true)
 
-# 📋 Portal de Tomada de Contas — CAR/BA (Versão Atualizada)
+# 📋 Portal de Tomada de Contas
 
 O **Portal de Tomada de Contas** centraliza num único lugar tudo que o setor precisava buscar manualmente no SACC, no SEI e no DATACAR. Convênios, demandas, viagens, vencimentos, notificações do TCE. Tudo ali, organizado, acessível e claro.
 
