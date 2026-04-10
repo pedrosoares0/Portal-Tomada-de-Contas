@@ -1,4 +1,6 @@
-![Capa](imagens/capa-readme.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/pedrosoares0/Portal-Tomada-de-Contas/main/imagens/capa-readme.png" alt="Capa" width="100%">
+</p>
 
 # 📋 Portal de Tomada de Contas — CAR/BA
 
