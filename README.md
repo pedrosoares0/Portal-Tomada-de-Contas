@@ -35,10 +35,12 @@ Sem precisar saber em qual dos três sistemas aquela informação estava.
 ---
 
 ## Como funciona por baixo
+
+```text
 SACC ─────┐
 SEI ──────┼──▶ APIs + Automações ──▶ Portal 
 DATACAR ──┘     + Database local
-
+```
 
 - Integração via **API** com SACC e DATACAR
 - **Automações** para sincronização de dados entre sistemas
