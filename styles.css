@@ -2154,19 +2154,21 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
   box-shadow: 0 4px 12px rgba(74, 88, 242, 0.02) !important;
 }
 
-/* Centralização de colunas numéricas, datas, convênio e portaria */
+/* Centralização de colunas numéricas, datas, convênio, portaria e comissão */
 .spreadsheet-table thead th:nth-child(1),
 .spreadsheet-table thead th:nth-child(6),
 .spreadsheet-table thead th:nth-child(7),
 .spreadsheet-table thead th:nth-child(8),
 .spreadsheet-table thead th:nth-child(9),
 .spreadsheet-table thead th:nth-child(11),
+.spreadsheet-table thead th:nth-child(13),
 .spreadsheet-table tbody td:nth-child(1),
 .spreadsheet-table tbody td:nth-child(6),
 .spreadsheet-table tbody td:nth-child(7),
 .spreadsheet-table tbody td:nth-child(8),
 .spreadsheet-table tbody td:nth-child(9),
-.spreadsheet-table tbody td:nth-child(11) {
+.spreadsheet-table tbody td:nth-child(11),
+.spreadsheet-table tbody td:nth-child(13) {
   text-align: center !important;
 }
 
@@ -2174,4 +2176,72 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
 .spreadsheet-table tbody td:nth-child(7) .cell-value {
   display: inline-block !important;
 }
+
+/* Estilos do Grupo de Avatares da Comissão */
+.avatar-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+}
+
+.avatar-group-item {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #ffffff !important;
+  margin-left: -8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 150ms ease !important;
+  position: relative !important;
+}
+
+.avatar-group-item:first-child {
+  margin-left: 0 !important;
+}
+
+.avatar-group-item:hover {
+  transform: translateY(-2px) scale(1.1) !important;
+  z-index: 50 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.avatar-group-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+.avatar-initial-blue {
+  background: linear-gradient(135deg, #4A58F2, #669CFE) !important;
+}
+
+.avatar-initial-green {
+  background: linear-gradient(135deg, #34C759, #5BE272) !important;
+}
+
+.avatar-initial-gray {
+  background: linear-gradient(135deg, #434343, #8E8E8E) !important;
+}
+
+.avatar-initial-red {
+  background: linear-gradient(135deg, #FF3B30, #FF7B7B) !important;
+}
+
+.avatar-initial-orange {
+  background: linear-gradient(135deg, #FF9500, #FFB340) !important;
+}
+
+.avatar-initial-purple {
+  background: linear-gradient(135deg, #AF52DE, #C37FF5) !important;
+}
+
 

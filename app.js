@@ -440,7 +440,7 @@ function doGet(e) {
   // Fetch from Google Sheet (Apps Script Web App or Visualization JSON API via JSONP script injection)
   const fetchSheetData = async (force = false, silent = false) => {
     if (!silent && !baseData.length) {
-      tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 24px; color: var(--muted);">Carregando dados da planilha do Google...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 24px; color: var(--muted);">Carregando dados da planilha do Google...</td></tr>`;
     }
     
     try {
@@ -590,8 +590,75 @@ function doGet(e) {
     "Ano",
     "Andamento",
     "Código Portaria",
-    "Observação"
+    "Observação",
+    "Comissão"
   ];
+
+  const getCommissionAvatarsHtml = (text) => {
+    if (!text) return '';
+    
+    const tokens = text.split(/\s+e\s+|,\s*|;\s*/i).map(t => t.trim()).filter(Boolean);
+    if (!tokens.length) return '';
+
+    const known = [
+      { key: 'joao', name: 'João Rios', img: 'imagens/joao-icon.jpg', color: 'avatar-initial-blue', initial: 'J' },
+      { key: 'irail', name: 'Iraildes', img: 'imagens/iraildes-icon.jpg', color: 'avatar-initial-green', initial: 'I' },
+      { key: 'pedro', name: 'Pedro', img: 'imagens/pedro-icon.jpg', color: 'avatar-initial-gray', initial: 'P' },
+      { key: 'pablo', name: 'Pablo', img: 'imagens/pablo-icon.jpg', color: 'avatar-initial-red', initial: 'P' },
+      { key: 'cicero', name: 'Cícero', img: null, color: 'avatar-initial-orange', initial: 'C' },
+      { key: 'maria', name: 'Maria', img: null, color: 'avatar-initial-purple', initial: 'M' }
+    ];
+
+    const colors = [
+      'avatar-initial-blue',
+      'avatar-initial-green',
+      'avatar-initial-gray',
+      'avatar-initial-red',
+      'avatar-initial-orange',
+      'avatar-initial-purple'
+    ];
+
+    let html = '<div class="avatar-group">';
+    const seen = new Set();
+
+    tokens.forEach(token => {
+      const normalized = token.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      let match = known.find(k => normalized.includes(k.key));
+      
+      if (match) {
+        if (seen.has(match.name)) return;
+        seen.add(match.name);
+        if (match.img) {
+          html += `<div class="avatar-group-item" title="${match.name}"><img src="${match.img}" alt="${match.name}"></div>`;
+        } else {
+          html += `<div class="avatar-group-item ${match.color}" title="${match.name}">${match.initial}</div>`;
+        }
+      } else {
+        const nameClean = token;
+        if (seen.has(nameClean)) return;
+        seen.add(nameClean);
+        const initial = nameClean.charAt(0).toUpperCase();
+        let charSum = 0;
+        for (let idx = 0; idx < nameClean.length; idx++) {
+          charSum += nameClean.charCodeAt(idx);
+        }
+        const colorClass = colors[charSum % colors.length];
+        html += `<div class="avatar-group-item ${colorClass}" title="${nameClean}">${initial}</div>`;
+      }
+    });
+
+    html += '</div>';
+    return html;
+  };
+
+  const renderCommissionCell = (cellVal, text) => {
+    cellVal.dataset.raw = text || '';
+    if (!text || text.trim() === '') {
+      cellVal.innerHTML = '';
+    } else {
+      cellVal.innerHTML = getCommissionAvatarsHtml(text);
+    }
+  };
 
   const formatDateToDDMMYYYY = (val) => {
     if (!val) return '';
@@ -630,15 +697,15 @@ function doGet(e) {
     tbody.innerHTML = '';
 
     if (!data.length) {
-      tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum convênio encontrado.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 24px; color: var(--muted);">Nenhum convênio encontrado.</td></tr>`;
     } else {
       data.forEach((row) => {
         const tr = document.createElement('tr');
         const convenio = String(row[0]);
         tr.dataset.key = convenio;
         
-        // Render only the first 12 columns
-        for (let i = 0; i < 12; i++) {
+        // Render 13 columns (index 0 to 12)
+        for (let i = 0; i < 13; i++) {
           const td = document.createElement('td');
           
           const cellVal = document.createElement('div');
@@ -659,7 +726,9 @@ function doGet(e) {
           if (isNewRow) {
             val = '';
           }
-          if (val) {
+          if (i === 12) {
+            renderCommissionCell(cellVal, val);
+          } else if (val) {
             cellVal.textContent = val;
           }
           cellVal.dataset.placeholder = placeholders[i] || '';
@@ -686,6 +755,12 @@ function doGet(e) {
             }
           }
           
+          if (i === 12) {
+            cellVal.addEventListener('focus', () => {
+              cellVal.textContent = cellVal.dataset.raw || '';
+            });
+          }
+
           cellVal.addEventListener('blur', () => {
             if (i === 5 || i === 7) {
               cellVal.textContent = normalizeInputDate(cellVal.textContent);
@@ -693,7 +768,12 @@ function doGet(e) {
             
             // Recalculate cell styling classes on blur
             cellVal.className = 'cell-value';
-            const updatedVal = cellVal.textContent;
+            const updatedVal = cellVal.textContent.trim();
+            
+            if (i === 12) {
+              renderCommissionCell(cellVal, updatedVal);
+            }
+            
             if (i === 0) {
               cellVal.classList.add('convenio-cell');
             } else if (i === 6) {
@@ -705,7 +785,7 @@ function doGet(e) {
               }
             } else if (i === 9) {
               cellVal.classList.add('status-badge-cell');
-              const statusText = updatedVal.trim().toLowerCase();
+              const statusText = updatedVal.toLowerCase();
               if (statusText.includes('aberto')) {
                 cellVal.classList.add('status-open');
               } else if (statusText.includes('finalizado') || statusText.includes('concluido')) {
@@ -715,7 +795,7 @@ function doGet(e) {
               }
             }
             
-            if (cellVal.textContent.trim() === '') {
+            if (i !== 12 && cellVal.textContent.trim() === '') {
               cellVal.innerHTML = '';
             }
             handleCellEdit(tr);
@@ -739,7 +819,7 @@ function doGet(e) {
     const trAdd = document.createElement('tr');
     trAdd.className = 'no-print';
     const tdAdd = document.createElement('td');
-    tdAdd.colSpan = 12;
+    tdAdd.colSpan = 13;
     tdAdd.style.textAlign = 'center';
     tdAdd.style.padding = '12px';
     tdAdd.style.background = '#fafafa';
@@ -795,7 +875,7 @@ function doGet(e) {
     if (!newConvenio) {
       if (oldKey.startsWith('NEW_')) {
         let hasAnyValue = false;
-        for (let i = 1; i < 12; i++) {
+        for (let i = 1; i < 13; i++) {
           const text = cells[i].textContent.trim();
           if (text) {
             hasAnyValue = true;
@@ -810,16 +890,18 @@ function doGet(e) {
     }
 
     const rowValues = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 13; i++) {
       const cellValDiv = cells[i].querySelector('.cell-value');
-      rowValues.push(cellValDiv ? cellValDiv.textContent.trim() : cells[i].textContent.trim());
+      if (i === 12 && cellValDiv) {
+        rowValues.push(cellValDiv.dataset.raw ? cellValDiv.dataset.raw.trim() : '');
+      } else {
+        rowValues.push(cellValDiv ? cellValDiv.textContent.trim() : cells[i].textContent.trim());
+      }
     }
 
-    // Preserve columns 12 and 13 (Comissão and Resultado) from the existing record to prevent data loss!
+    // Preserve column 13 (Resultado) from the existing record to prevent data loss!
     const existingRow = getMergedData().find(r => String(r[0]) === oldKey);
-    const col12 = existingRow ? existingRow[12] : '';
-    const col13 = existingRow ? existingRow[13] : '';
-    rowValues.push(col12);
+    const col13 = existingRow ? existingRow[13] : 'Adimplente';
     rowValues.push(col13);
 
     if (oldKey !== newConvenio) {
@@ -892,7 +974,7 @@ function doGet(e) {
 
     const trs = tbody.querySelectorAll('tr');
     trs.forEach(tr => {
-      if (tr.classList.contains('no-print') || tr.cells.length < 12) return;
+      if (tr.classList.contains('no-print') || tr.cells.length < 13) return;
 
       let matchSearch = false;
       let matchFilters = true;
@@ -901,11 +983,11 @@ function doGet(e) {
       if (cleanQuery === '') {
         matchSearch = true;
       } else {
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 13; i++) {
           const cell = tr.cells[i];
           if (cell) {
             const div = cell.querySelector('.cell-value');
-            const cellText = div ? div.textContent : cell.textContent;
+            const cellText = (i === 12 && div) ? (div.dataset.raw || '') : (div ? div.textContent : cell.textContent);
             const text = (cellText || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             if (text.includes(cleanQuery)) {
               matchSearch = true;
@@ -916,11 +998,11 @@ function doGet(e) {
       }
 
       // 2. Check column-level checkbox filters
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 13; i++) {
         if (activeFilters[i]) {
           const cell = tr.cells[i];
           const div = cell ? cell.querySelector('.cell-value') : null;
-          const cellText = div ? div.textContent.trim() : (cell ? cell.textContent.trim() : '');
+          const cellText = (i === 12 && div) ? (div.dataset.raw || '').trim() : (div ? div.textContent.trim() : (cell ? cell.textContent.trim() : ''));
           if (!activeFilters[i].includes(cellText)) {
             matchFilters = false;
             break;
