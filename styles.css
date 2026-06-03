@@ -2186,11 +2186,11 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
 }
 
 .avatar-group-item {
-  width: 24px !important;
-  height: 24px !important;
+  width: 30px !important;
+  height: 30px !important;
   border-radius: 50% !important;
-  border: 1.5px solid #ffffff !important;
-  margin-left: -8px !important;
+  border: 2px solid #ffffff !important;
+  margin-left: -10px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

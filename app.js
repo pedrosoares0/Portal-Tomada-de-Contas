@@ -600,12 +600,10 @@ function doGet(e) {
     const normalized = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     const known = [
-      { key: 'joao', name: 'João Rios', img: 'imagens/joao-icon.jpg', color: 'avatar-initial-blue', initial: 'J' },
-      { key: 'irail', name: 'Iraildes', img: 'imagens/iraildes-icon.jpg', color: 'avatar-initial-green', initial: 'I' },
-      { key: 'pedro', name: 'Pedro', img: 'imagens/pedro-icon.jpg', color: 'avatar-initial-gray', initial: 'P' },
-      { key: 'pablo', name: 'Pablo', img: 'imagens/pablo-icon.jpg', color: 'avatar-initial-red', initial: 'P' },
-      { key: 'cicero', name: 'Cícero', img: null, color: 'avatar-initial-orange', initial: 'C' },
-      { key: 'maria', name: 'Maria', img: null, color: 'avatar-initial-purple', initial: 'M' }
+      { key: 'joao', name: 'João Rios', img: 'imagens/joao-icon.jpg' },
+      { key: 'irail', name: 'Iraildes', img: 'imagens/iraildes-icon.jpg' },
+      { key: 'pedro', name: 'Pedro', img: 'imagens/pedro-icon.jpg' },
+      { key: 'pablo', name: 'Pablo', img: 'imagens/pablo-icon.jpg' }
     ];
 
     let html = '<div class="avatar-group">';
@@ -614,11 +612,7 @@ function doGet(e) {
     known.forEach(member => {
       if (normalized.includes(member.key)) {
         found = true;
-        if (member.img) {
-          html += `<div class="avatar-group-item" title="${member.name}"><img src="${member.img}" alt="${member.name}"></div>`;
-        } else {
-          html += `<div class="avatar-group-item ${member.color}" title="${member.name}">${member.initial}</div>`;
-        }
+        html += `<div class="avatar-group-item" title="${member.name}"><img src="${member.img}" alt="${member.name}"></div>`;
       }
     });
 
