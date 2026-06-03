@@ -645,8 +645,6 @@ function doGet(e) {
           cellVal.className = 'cell-value';
           if (i === 6) {
             cellVal.contentEditable = 'false';
-            cellVal.style.color = 'var(--muted)';
-            cellVal.style.fontWeight = 'var(--fw-medium)';
             cellVal.style.cursor = 'default';
             cellVal.style.userSelect = 'none';
           } else {
@@ -666,10 +664,57 @@ function doGet(e) {
           }
           cellVal.dataset.placeholder = placeholders[i] || '';
           
+          // Apply custom styling class based on column index
+          if (i === 0) {
+            cellVal.classList.add('convenio-cell');
+          } else if (i === 6) {
+            cellVal.classList.add('dias-passados-cell');
+            const num = parseInt(val, 10);
+            if (!isNaN(num)) {
+              if (num > 0) cellVal.classList.add('overdue');
+              else cellVal.classList.add('pending');
+            }
+          } else if (i === 9) {
+            cellVal.classList.add('status-badge-cell');
+            const statusText = val.trim().toLowerCase();
+            if (statusText.includes('aberto')) {
+              cellVal.classList.add('status-open');
+            } else if (statusText.includes('finalizado') || statusText.includes('concluido')) {
+              cellVal.classList.add('status-done');
+            } else {
+              cellVal.classList.add('status-progress');
+            }
+          }
+          
           cellVal.addEventListener('blur', () => {
             if (i === 5 || i === 7) {
               cellVal.textContent = normalizeInputDate(cellVal.textContent);
             }
+            
+            // Recalculate cell styling classes on blur
+            cellVal.className = 'cell-value';
+            const updatedVal = cellVal.textContent;
+            if (i === 0) {
+              cellVal.classList.add('convenio-cell');
+            } else if (i === 6) {
+              cellVal.classList.add('dias-passados-cell');
+              const num = parseInt(updatedVal, 10);
+              if (!isNaN(num)) {
+                if (num > 0) cellVal.classList.add('overdue');
+                else cellVal.classList.add('pending');
+              }
+            } else if (i === 9) {
+              cellVal.classList.add('status-badge-cell');
+              const statusText = updatedVal.trim().toLowerCase();
+              if (statusText.includes('aberto')) {
+                cellVal.classList.add('status-open');
+              } else if (statusText.includes('finalizado') || statusText.includes('concluido')) {
+                cellVal.classList.add('status-done');
+              } else {
+                cellVal.classList.add('status-progress');
+              }
+            }
+            
             if (cellVal.textContent.trim() === '') {
               cellVal.innerHTML = '';
             }

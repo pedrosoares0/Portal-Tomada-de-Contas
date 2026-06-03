@@ -1986,3 +1986,170 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
   background: #fff;
   cursor: pointer;
 }
+
+/* Premium Spreadsheet Overrides & Table Layout Polish */
+.spreadsheet-table thead th {
+  background: #F8FAFC !important;
+  color: #64748B !important; /* Modern Slate-500 gray */
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  border-right: 1px solid #F1F5F9 !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+.spreadsheet-table tbody td {
+  border-bottom: 1px solid #F1F5F9 !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.02) !important;
+}
+
+.cell-value {
+  padding: 10px 14px !important;
+  font-size: 12px !important;
+  color: #334155 !important; /* Premium Slate-700 gray */
+  font-weight: 500 !important;
+  transition: all 150ms ease;
+}
+
+.cell-value:focus {
+  outline: 2px solid #4A58F2 !important;
+  outline-offset: -2px !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(74, 88, 242, 0.12) !important;
+  border-radius: 4px;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Custom cell badges */
+.convenio-cell {
+  font-family: monospace;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  background: #F1F5F9 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  min-height: auto !important;
+}
+
+.dias-passados-cell {
+  font-weight: 600 !important;
+  min-height: auto !important;
+}
+
+.dias-passados-cell.overdue {
+  color: #EF4444 !important;
+  background: #FEF2F2 !important;
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+}
+
+.dias-passados-cell.pending {
+  color: #10B981 !important;
+  background: #ECFDF5 !important;
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+}
+
+.status-badge-cell {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 10px !important;
+  border-radius: 12px !important;
+  min-height: auto !important;
+  width: auto !important;
+}
+
+.status-badge-cell::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-badge-cell.status-open {
+  background-color: #FEF3C7 !important;
+  color: #D97706 !important;
+}
+
+.status-badge-cell.status-open::before {
+  background-color: #D97706;
+}
+
+.status-badge-cell.status-done {
+  background-color: #D1FAE5 !important;
+  color: #059669 !important;
+}
+
+.status-badge-cell.status-done::before {
+  background-color: #059669;
+}
+
+.status-badge-cell.status-progress {
+  background-color: #DBEAFE !important;
+  color: #2563EB !important;
+}
+
+.status-badge-cell.status-progress::before {
+  background-color: #2563EB;
+}
+
+/* Polishing search input */
+.search input {
+  border: 1px solid #E2E8F0 !important;
+  background: #F8FAFC !important;
+  color: #334155 !important;
+}
+
+.search input:focus {
+  border-color: rgba(74, 88, 242, 0.4) !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(74, 88, 242, 0.06), inset 0 1.5px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Polishing sheet border */
+.manual-spreadsheet {
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01) !important;
+}
+
+/* Action button improvements */
+.btn-nova-tomada {
+  border: 1px solid #E2E8F0 !important;
+  background-color: #FFFFFF !important;
+  color: #334155 !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-nova-tomada:hover {
+  border-color: #4A58F2 !important;
+}
+
+.btn-nova-tomada::before {
+  background-color: #4A58F2 !important;
+}
+
+/* Header icon styling */
+.section-icon {
+  background: rgba(74, 88, 242, 0.04) !important;
+  border: 1px solid rgba(74, 88, 242, 0.08) !important;
+  padding: 6px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 12px rgba(74, 88, 242, 0.02) !important;
+}
