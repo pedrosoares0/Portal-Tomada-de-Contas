@@ -597,8 +597,7 @@ function doGet(e) {
   const getCommissionAvatarsHtml = (text) => {
     if (!text) return '';
     
-    const tokens = text.split(/\s+e\s+|,\s*|;\s*/i).map(t => t.trim()).filter(Boolean);
-    if (!tokens.length) return '';
+    const normalized = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     const known = [
       { key: 'joao', name: 'João Rios', img: 'imagens/joao-icon.jpg', color: 'avatar-initial-blue', initial: 'J' },
@@ -609,54 +608,31 @@ function doGet(e) {
       { key: 'maria', name: 'Maria', img: null, color: 'avatar-initial-purple', initial: 'M' }
     ];
 
-    const colors = [
-      'avatar-initial-blue',
-      'avatar-initial-green',
-      'avatar-initial-gray',
-      'avatar-initial-red',
-      'avatar-initial-orange',
-      'avatar-initial-purple'
-    ];
-
     let html = '<div class="avatar-group">';
-    const seen = new Set();
+    let found = false;
 
-    tokens.forEach(token => {
-      const normalized = token.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      let match = known.find(k => normalized.includes(k.key));
-      
-      if (match) {
-        if (seen.has(match.name)) return;
-        seen.add(match.name);
-        if (match.img) {
-          html += `<div class="avatar-group-item" title="${match.name}"><img src="${match.img}" alt="${match.name}"></div>`;
+    known.forEach(member => {
+      if (normalized.includes(member.key)) {
+        found = true;
+        if (member.img) {
+          html += `<div class="avatar-group-item" title="${member.name}"><img src="${member.img}" alt="${member.name}"></div>`;
         } else {
-          html += `<div class="avatar-group-item ${match.color}" title="${match.name}">${match.initial}</div>`;
+          html += `<div class="avatar-group-item ${member.color}" title="${member.name}">${member.initial}</div>`;
         }
-      } else {
-        const nameClean = token;
-        if (seen.has(nameClean)) return;
-        seen.add(nameClean);
-        const initial = nameClean.charAt(0).toUpperCase();
-        let charSum = 0;
-        for (let idx = 0; idx < nameClean.length; idx++) {
-          charSum += nameClean.charCodeAt(idx);
-        }
-        const colorClass = colors[charSum % colors.length];
-        html += `<div class="avatar-group-item ${colorClass}" title="${nameClean}">${initial}</div>`;
       }
     });
 
     html += '</div>';
-    return html;
+    return found ? html : '';
   };
 
-  const renderCommissionCell = (cellVal, text) => {
-    cellVal.dataset.raw = text || '';
-    if (!text || text.trim() === '') {
+  const renderCommissionCell = (cellVal, displayText, rawText) => {
+    cellVal.dataset.raw = rawText || '';
+    if (!displayText || displayText.trim() === '') {
       cellVal.innerHTML = '';
     } else {
-      cellVal.innerHTML = getCommissionAvatarsHtml(text);
+      const avatarsHtml = getCommissionAvatarsHtml(displayText);
+      cellVal.innerHTML = avatarsHtml || '';
     }
   };
 
@@ -727,7 +703,10 @@ function doGet(e) {
             val = '';
           }
           if (i === 12) {
-            renderCommissionCell(cellVal, val);
+            const commText = row[12] || '';
+            const obsText = row[11] || '';
+            const displayText = commText ? commText : obsText;
+            renderCommissionCell(cellVal, displayText, commText);
           } else if (val) {
             cellVal.textContent = val;
           }
@@ -771,7 +750,7 @@ function doGet(e) {
             const updatedVal = cellVal.textContent.trim();
             
             if (i === 12) {
-              renderCommissionCell(cellVal, updatedVal);
+              renderCommissionCell(cellVal, updatedVal, updatedVal);
             }
             
             if (i === 0) {
