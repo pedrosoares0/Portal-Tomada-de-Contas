@@ -671,7 +671,7 @@ function doGet(e) {
             cellVal.classList.add('dias-passados-cell');
             const num = parseInt(val, 10);
             if (!isNaN(num)) {
-              if (num > 0) cellVal.classList.add('overdue');
+              if (num > 90) cellVal.classList.add('overdue');
               else cellVal.classList.add('pending');
             }
           } else if (i === 9) {
@@ -700,7 +700,7 @@ function doGet(e) {
               cellVal.classList.add('dias-passados-cell');
               const num = parseInt(updatedVal, 10);
               if (!isNaN(num)) {
-                if (num > 0) cellVal.classList.add('overdue');
+                if (num > 90) cellVal.classList.add('overdue');
                 else cellVal.classList.add('pending');
               }
             } else if (i === 9) {

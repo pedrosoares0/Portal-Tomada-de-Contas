@@ -2008,7 +2008,7 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
 
 .cell-value {
   padding: 10px 14px !important;
-  font-size: 12px !important;
+  font-size: 13px !important; /* Aumentada levemente a fonte */
   color: #334155 !important; /* Premium Slate-700 gray */
   font-weight: 500 !important;
   transition: all 150ms ease;
@@ -2152,4 +2152,26 @@ body.sidebar-collapsed .sidebar:hover .sidebar-logo {
   align-items: center !important;
   justify-content: center !important;
   box-shadow: 0 4px 12px rgba(74, 88, 242, 0.02) !important;
-}
+}
+
+/* Centralização de colunas numéricas, datas, convênio e portaria */
+.spreadsheet-table thead th:nth-child(1),
+.spreadsheet-table thead th:nth-child(6),
+.spreadsheet-table thead th:nth-child(7),
+.spreadsheet-table thead th:nth-child(8),
+.spreadsheet-table thead th:nth-child(9),
+.spreadsheet-table thead th:nth-child(11),
+.spreadsheet-table tbody td:nth-child(1),
+.spreadsheet-table tbody td:nth-child(6),
+.spreadsheet-table tbody td:nth-child(7),
+.spreadsheet-table tbody td:nth-child(8),
+.spreadsheet-table tbody td:nth-child(9),
+.spreadsheet-table tbody td:nth-child(11) {
+  text-align: center !important;
+}
+
+.spreadsheet-table tbody td:nth-child(1) .cell-value,
+.spreadsheet-table tbody td:nth-child(7) .cell-value {
+  display: inline-block !important;
+}
+
