@@ -612,7 +612,7 @@ function doGet(e) {
     known.forEach(member => {
       if (normalized.includes(member.key)) {
         found = true;
-        html += `<div class="avatar-group-item" title="${member.name}"><img src="${member.img}" alt="${member.name}"></div>`;
+        html += `<div class="avatar-group-item" data-tooltip="${member.name}" title="${member.name}"><img src="${member.img}" alt="${member.name}"></div>`;
       }
     });
 
@@ -1275,4 +1275,51 @@ function doGet(e) {
   fetchSheetData();
   enableColumnResizing();
   enableHeaderFilters();
+})();
+
+// Loader Sofisticado e Slideshow da Sidebar
+(function() {
+  // 1. Simulação do Loader de inicialização
+  const loader = document.getElementById('app-loader');
+  const fill = loader ? loader.querySelector('.loader-progress-fill') : null;
+  const pct = loader ? loader.querySelector('.loader-percentage') : null;
+
+  if (loader && fill && pct) {
+    let progress = 0;
+    const duration = 1600; // 1.6 segundos para preenchimento completo e sensação de robustez
+    const intervalTime = 16;
+    const steps = duration / intervalTime;
+    const increment = 100 / steps;
+
+    const timer = setInterval(() => {
+      progress += increment;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(timer);
+        
+        fill.style.width = '100%';
+        pct.textContent = '100%';
+        
+        setTimeout(() => {
+          loader.classList.add('fade-out');
+        }, 350);
+      } else {
+        // Exibição do progresso de forma natural
+        const displayProgress = Math.min(99, Math.floor(progress));
+        fill.style.width = `${displayProgress}%`;
+        pct.textContent = `${displayProgress}%`;
+      }
+    }, intervalTime);
+  }
+
+  // 2. Slideshow alternado da Sidebar
+  const slides = document.querySelectorAll('.sidebar-bg-slideshow .slide');
+  if (slides.length > 0) {
+    let currentSlide = 0;
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 5000); // Troca a imagem a cada 5 segundos
+  }
 })();

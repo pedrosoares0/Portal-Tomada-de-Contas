@@ -7,7 +7,8 @@
   <title>Portal - Tomada de Contas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="imagens/logo-controle-tomada.png">
   <meta name="color-scheme" content="light only">
@@ -16,6 +17,21 @@
 </head>
 
 <body>
+  <!-- Loader Sofisticado -->
+  <div id="app-loader" class="app-loader">
+    <div class="loader-content">
+      <div class="loader-logo-wrapper">
+        <img src="imagens/logo-controle-tomada.png" alt="Logo" class="loader-logo">
+        <div class="loader-ring"></div>
+      </div>
+      <div class="loader-text">Portal Tomada de Contas</div>
+      <div class="loader-progress-bar">
+        <div class="loader-progress-fill"></div>
+      </div>
+      <div class="loader-percentage">0%</div>
+    </div>
+  </div>
+
   <div class="app">
     <aside class="sidebar">
       <div class="sidebar-inner">
@@ -28,7 +44,9 @@
         </nav>
 
         <div class="panel-committees-sidebar">
-          <h2>Comissões</h2>
+          <div class="sidebar-committees-folder">
+            <span class="folder-title">Comissões</span>
+          </div>
           <ul class="people">
             <li>
               <span class="avatar avatar-blue"><img src="imagens/joao-icon.jpg" alt="João Rios"></span>
@@ -59,6 +77,30 @@
               </div>
             </li>
           </ul>
+        </div>
+
+        <!-- Card de Slideshow da Agricultura Familiar -->
+        <div class="sidebar-slideshow-card">
+          <div class="sidebar-bg-slideshow">
+            <div class="slide active"
+              style="background-image: url('https://www.ba.gov.br/car/sites/site-car/files/2026-05/Galinheiros%20R%C3%BAsticos%20-%20Foto%20Geraldo%20Carvalho%20%281%29.jpg');">
+            </div>
+            <div class="slide"
+              style="background-image: url('https://www.ba.gov.br/car/sites/site-car/files/2026-04/Comunidades%20da%20Mata%20Atl%C3%A2ntica%20constroem%20planos%20participativos%20%284%29.jpeg');">
+            </div>
+            <div class="slide"
+              style="background-image: url('https://www.ba.gov.br/car/sites/site-car/files/2026-04/PHOTO-2026-04-22-12-22-19%20%281%29.jpg');">
+            </div>
+            <div class="slide"
+              style="background-image: url('https://boomi.b-cdn.net/wp-content/uploads/2024/04/A-importancia-e-os-desafios-da-agricultura-familiar.png');">
+            </div>
+            <div class="slide"
+              style="background-image: url('https://blog.klabin.com.br/documents/55324/0/GettyImages-538646808_Easy-Resize.com.jpg/5375a01d-ffd8-3c5e-9a0d-fc9a88a72974?t=1714071496970');">
+            </div>
+            <div class="slide"
+              style="background-image: url('https://www.teixeiradefreitas.ba.gov.br/wp-content/uploads/2023/07/1-37-1152x768.jpeg');">
+            </div>
+          </div>
         </div>
 
         <div class="sidebar-logo card">
@@ -97,20 +139,21 @@
             <div class="table-actions no-print">
               <button id="btn-add-record" class="btn-nova-tomada" type="button">
                 Nova Tomada
-                <svg
-                  viewBox="0 0 16 19"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg viewBox="0 0 16 19" xmlns="http://www.w3.org/2000/svg">
                   <path
-                    d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z"
-                  ></path>
+                    d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z">
+                  </path>
                 </svg>
               </button>
               <button id="btn-reload-sheet" class="btn btn-ghost btn-sm">Recarregar Planilha</button>
-              <button id="btn-open-sync-settings" class="btn btn-ghost btn-sm btn-icon" title="Configurar Sincronização Google Sheets" type="button">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <button id="btn-open-sync-settings" class="btn btn-ghost btn-sm btn-icon"
+                title="Configurar Sincronização Google Sheets" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+                  </path>
                 </svg>
               </button>
             </div>
