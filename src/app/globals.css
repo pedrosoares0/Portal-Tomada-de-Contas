@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #28cd41;
+  --color-primary-hover: #20a632;
+  --color-warning-bg: rgba(255, 149, 0, 0.08);
+  --color-warning-text: #b25900;
+  --color-success-bg: rgba(52, 199, 89, 0.08);
+  --color-success-text: #1d7531;
+  --color-danger-bg: rgba(255, 59, 48, 0.08);
+  --color-danger-text: #b21b14;
+  --color-info-bg: rgba(90, 200, 250, 0.08);
+  --color-info-text: #0070a3;
+  --color-muted: #86868b;
+  --color-text-dark: #1d1d1f;
+  
+  --radius-glass: 24px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+}
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --table-border: rgba(0, 0, 0, 0.06);
+  --table-border-light: rgba(0, 0, 0, 0.04);
+  --table-header-bg: rgba(245, 245, 247, 0.85);
+  --table-row-even: #fafbfc;
+  --table-row-hover: rgba(40, 205, 65, 0.02);
+}
+
+body {
+  margin: 0;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Sonoma ambient glows */
+body::before {
+  content: "";
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(40, 205, 65, 0.04) 0%, rgba(40, 205, 65, 0) 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: -10%;
+  left: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(52, 199, 89, 0.035) 0%, rgba(52, 199, 89, 0) 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Row Save Flash Animation */
+.row-save-flash {
+  animation: rowFlash 1200ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes rowFlash {
+  0% {
+    background-color: rgba(52, 199, 89, 0.25) !important;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Hidden elements for print */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Custom Webkit scrollbars for sheet container */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+/* Perspective Accordion effect */
+.folder-perspective {
+  perspective: 800px;
+}
+
+.folder-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.folder-tilt:hover {
+  transform: rotateX(8deg) translateY(-1px);
+}
+
+/* Premium Pill Badges (Apple/Linear Style) */
+.premium-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 9999px; /* Fully rounded pill */
+  border: 1.5px solid var(--badge-border);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  line-height: 1.3;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-pill-badge:hover {
+  transform: translateY(-0.5px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Color variations */
+.badge-blue {
+  --badge-border: #1E70F5;
+  --badge-bg: #EBF2FF;
+  --badge-text: #0B57D0;
+}
+
+.badge-green {
+  --badge-border: #10B981;
+  --badge-bg: #E6F8F3;
+  --badge-text: #047857;
+}
+
+.badge-purple {
+  --badge-border: #8B5CF6;
+  --badge-bg: #F5F3FF;
+  --badge-text: #6D28D9;
+}
+
+.badge-orange {
+  --badge-border: #F97316;
+  --badge-bg: #FFF7ED;
+  --badge-text: #C2410C;
+}
+
+.badge-red {
+  --badge-border: #EF4444;
+  --badge-bg: #FEF2F2;
+  --badge-text: #B91C1C;
+}
+
+.badge-cyan {
+  --badge-border: #06B6D4;
+  --badge-bg: #ECFEFF;
+  --badge-text: #0891B2;
+}
+
+.badge-gray {
+  --badge-border: #9CA3AF;
+  --badge-bg: #F9FAFB;
+  --badge-text: #4B5563;
+}
+
