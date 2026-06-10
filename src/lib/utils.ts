@@ -202,4 +202,6 @@ export const TAB_LABELS: Record<string, string> = {
   notificacoes: "Notificações",
   visitas: "Visitas",
   setafs: "SETAFs",
+  portarias: "Portarias e Ofícios",
 };
+

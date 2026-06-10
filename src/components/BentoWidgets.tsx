@@ -87,7 +87,8 @@ export default function BentoWidgets() {
       desc: "Controle de Tomadas e TCE's",
       iconSrc: "/imagens/portarias.png",
       hoverBorderClass: "hover:border-[#007AFF]/20 hover:shadow-[0_12px_24px_rgba(0,122,255,0.06)]",
-      hoverTextClass: "group-hover:text-[#007AFF]"
+      hoverTextClass: "group-hover:text-[#007AFF]",
+      onClick: () => setActiveTab("portarias")
     },
     {
       title: "Notificações TCE",

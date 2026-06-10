@@ -12,13 +12,15 @@ import {
   Bell,
   Car,
   Building2,
-  FileClock
+  FileClock,
+  FileText
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const menuItems = [
   { id: "inicio", label: "Início", icon: Home },
   { id: "dashboard", label: "Indicadores", icon: BarChart3 },
+  { id: "portarias", label: "Portarias", icon: FileText },
   { id: "analise", label: "Em análise", icon: FileClock },
   { id: "fluxos", label: "Fluxos", icon: GitFork },
   { id: "notificacoes", label: "Notificações", icon: Bell },
@@ -29,13 +31,15 @@ const menuItems = [
 export default function Sidebar() {
   const { activeTab, setActiveTab, activeCommissionFilter, toggleCommissionFilter } = useApp();
   const [isComissoesOpen, setIsComissoesOpen] = useState(true);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
 
   // Load minimized state on client side
   useEffect(() => {
     try {
       const saved = localStorage.getItem("sidebar_minimized");
-      if (saved === "true") {
+      if (saved === "false") {
+        setIsMinimized(false);
+      } else {
         setIsMinimized(true);
       }
     } catch (e) {

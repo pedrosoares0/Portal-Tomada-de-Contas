@@ -654,10 +654,24 @@ export default function Spreadsheet() {
   };
 
   const handleToggleSelectAll = (colIdx: number, selectAll: boolean) => {
-    if (selectAll) {
-      setTempCheckedValues(getUniqueColumnValues(colIdx));
+    const allVals = getUniqueColumnValues(colIdx);
+    const search = dropdownSearch.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+    if (search === "") {
+      if (selectAll) {
+        setTempCheckedValues(allVals);
+      } else {
+        setTempCheckedValues([]);
+      }
     } else {
-      setTempCheckedValues([]);
+      const filtered = allVals.filter(val =>
+        val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(search)
+      );
+      if (selectAll) {
+        setTempCheckedValues(prev => Array.from(new Set([...prev, ...filtered])));
+      } else {
+        setTempCheckedValues(prev => prev.filter(v => !filtered.includes(v)));
+      }
     }
   };
 
@@ -967,6 +981,15 @@ export default function Spreadsheet() {
             placeholder="Filtrar valores..."
             value={dropdownSearch}
             onChange={(e) => setDropdownSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitFilter(activeDropdown);
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setActiveDropdown(null);
+              }
+            }}
             className="w-full h-7 px-2 border border-[#E5E7EB] rounded-[6px] outline-none text-[11px] focus:border-[#28cd41]"
           />
 
@@ -992,19 +1015,31 @@ export default function Spreadsheet() {
               .map((val) => {
                 const isChecked = tempCheckedValues.includes(val);
                 return (
-                  <label key={val} className="flex items-center gap-2 cursor-pointer select-none text-[#2d3142]">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => {
-                        setTempCheckedValues(prev =>
-                          isChecked ? prev.filter(v => v !== val) : [...prev, val]
-                        );
+                  <div key={val} className="group/item flex items-center justify-between gap-2 text-[#2d3142] hover:bg-slate-50 px-1 py-0.5 rounded">
+                    <label className="flex items-center gap-2 cursor-pointer select-none text-[11px] font-semibold min-w-0 flex-1">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          setTempCheckedValues(prev =>
+                            isChecked ? prev.filter(v => v !== val) : [...prev, val]
+                          );
+                        }}
+                        className="m-0 cursor-pointer accent-[#28cd41]"
+                      />
+                      <span className="truncate" title={val}>{val}</span>
+                    </label>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setTempCheckedValues([val]);
                       }}
-                      className="m-0 cursor-pointer accent-[#28cd41]"
-                    />
-                    <span className="truncate max-w-[150px]">{val}</span>
-                  </label>
+                      className="hidden group-hover/item:block text-[9px] font-bold text-[#28cd41] hover:underline cursor-pointer bg-transparent border-0 outline-none p-0 mr-1"
+                    >
+                      Apenas este
+                    </button>
+                  </div>
                 );
               })}
           </div>

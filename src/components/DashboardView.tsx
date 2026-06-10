@@ -900,6 +900,11 @@ export default function DashboardView() {
                     '&:hover': {
                       opacity: 0.85
                     }
+                  },
+                  '& .MuiChartsLegend-root text': {
+                    fontSize: '10px !important',
+                    fontWeight: 'bold !important',
+                    fill: '#374151 !important',
                   }
                 }}
                 slotProps={{
@@ -930,11 +935,6 @@ export default function DashboardView() {
                   legend: {
                     direction: 'column' as any,
                     position: { vertical: 'middle' as const, horizontal: 'end' as const },
-                    labelStyle: {
-                      fontSize: 10,
-                      fontWeight: 'bold',
-                      fill: '#374151',
-                    },
                     itemMarkWidth: 8,
                     itemMarkHeight: 8,
                     markGap: 6,
