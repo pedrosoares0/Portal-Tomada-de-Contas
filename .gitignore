@@ -43,3 +43,6 @@ next-env.d.ts
 # temp and backup files
 /scratch/
 /vanilla-backup/
+
+# database & runtime data
+/src/data/
