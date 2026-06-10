@@ -212,14 +212,30 @@ export default function ViagensModal() {
       {/* Print-specific style override */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          /* Hide main dashboard, sidebar and modals overlay background during voyages print */
-          body > :not(#viagens-print-area-container) {
+          /* Hide sidebar, main content of page, toast alerts and other screen elements */
+          .sidebar, aside, .main, main, [role="status"], .print\\:hidden {
             display: none !important;
           }
+          
+          /* Clean up root, body and app wrapper layout for printing */
+          html, body, .app {
+            background: white !important;
+            color: black !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+
+          /* Ensure the print container spans the entire page */
           #viagens-print-area-container {
             display: block !important;
-            position: static !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
             width: 100% !important;
+            max-width: 100% !important;
             height: auto !important;
             background: white !important;
             padding: 0 !important;
@@ -273,11 +289,11 @@ export default function ViagensModal() {
             </div>
           </div>
 
-          {/* PRINT ONLY Header */}
-          <div className="hidden print:block mb-8 pb-4 border-b-2 border-slate-900">
-            <div className="flex justify-between items-center w-full mb-6">
+          {/* Document Header (Logos + Title) */}
+          <div className="mb-6 pb-6 border-b border-black/10 print:mb-8 print:pb-4 print:border-b-2 print:border-slate-900">
+            <div className="flex justify-between items-center w-full mb-4 print:mb-6">
               {/* Left Logo (CAR) */}
-              <div className="relative w-40 h-10">
+              <div className="relative w-36 h-9 sm:w-40 sm:h-10">
                 <img
                   src="https://www.ba.gov.br/car/sites/site-car/files/migracao_2024/arquivos/files/logo_docs.png"
                   alt="Logo CAR"
@@ -286,7 +302,7 @@ export default function ViagensModal() {
               </div>
               
               {/* Right Logo (Governo da Bahia) */}
-              <div className="relative w-44 h-12">
+              <div className="relative w-40 h-10 sm:w-44 sm:h-11">
                 <img
                   src="https://www.ba.gov.br/comunicacao/modules/custom/bagov_base_blocks/assets/images/logo-governo-rodape.png"
                   alt="Governo da Bahia"
@@ -296,13 +312,13 @@ export default function ViagensModal() {
             </div>
             
             <div className="text-center">
-              <h1 className="text-[14pt] font-black text-slate-950 uppercase tracking-tight leading-none">
+              <h1 className="text-sm sm:text-base font-black text-slate-800 uppercase tracking-tight leading-none print:text-[14pt] print:text-slate-950">
                 Relação de Viagens e Programação de Diárias
               </h1>
-              <h2 className="text-[10pt] font-bold text-slate-600 mt-1.5 uppercase tracking-wider">
+              <h2 className="text-[10px] sm:text-xs font-bold text-slate-500 mt-1 uppercase tracking-wider print:text-[10pt] print:text-slate-600">
                 Setor de Tomada de Contas Especial (TCE)
               </h2>
-              <div className="inline-block mt-3 px-4 py-1 border border-slate-950 rounded bg-slate-50 text-[10pt] font-extrabold text-slate-950">
+              <div className="inline-block mt-2 px-3 py-1 border border-black/15 rounded bg-black/5 text-[10px] sm:text-xs font-extrabold text-slate-700 print:border-slate-950 print:bg-slate-50 print:text-[10pt] print:text-slate-950">
                 Mês de Referência: <span className="underline decoration-2">{getFormattedMonthLabel()}</span>
               </div>
             </div>
