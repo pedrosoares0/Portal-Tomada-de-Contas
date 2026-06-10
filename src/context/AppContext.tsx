@@ -165,7 +165,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(savedViagens);
         setViagensData({ month: defaultMonth, rows: parsed.rows || [] });
       } else {
-        setViagensData({ month: defaultMonth, rows: Array(4).fill(null).map(() => Array(6).fill("")) });
+        setViagensData({ month: defaultMonth, rows: Array(4).fill(null).map(() => Array(5).fill("")) });
       }
     } catch (e) {
       console.error("Erro ao carregar viagens padrão", e);

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { useApp } from "@/context/AppContext";
 import { X, Plus, Printer, Save } from "lucide-react";
 
@@ -20,23 +19,55 @@ export default function ViagensModal() {
     loadMonthData(currentMonth);
   }, []);
 
+  const sanitizeRows = (loadedRows: any[]): string[][] => {
+    return loadedRows.map((r: any) => {
+      if (!Array.isArray(r)) return Array(5).fill("");
+      const row = r.map(c => String(c || ""));
+      if (row.length === 6) {
+        // Drop the "Objeto" column at index 2
+        return [row[0], row[1], row[3], row[4], row[5]];
+      }
+      if (row.length < 5) {
+        return [...row, ...Array(5 - row.length).fill("")];
+      }
+      return row.slice(0, 5);
+    });
+  };
+
   // Load viajes data for the selected month
-  const loadMonthData = (month: string) => {
+  const loadMonthData = async (month: string) => {
     if (!month) return;
+    
+    // 1. Try loading from the server backend API
+    try {
+      const response = await fetch(`/api/viagens?month=${month}`);
+      if (response.ok) {
+        const resJson = await response.json();
+        if (resJson && Array.isArray(resJson.rows)) {
+          setRows(sanitizeRows(resJson.rows));
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to load voyages from server API, trying localStorage...", e);
+    }
+
+    // 2. Try loading from localStorage
     try {
       const saved = localStorage.getItem(`viagens:${month}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && Array.isArray(parsed.rows)) {
-          setRows(parsed.rows);
+          setRows(sanitizeRows(parsed.rows));
           return;
         }
       }
     } catch (e) {
       console.error(e);
     }
-    // Default fallback - 4 empty rows with 6 columns each
-    setRows(Array(4).fill(null).map(() => Array(6).fill("")));
+
+    // Default fallback - 4 empty rows with 5 columns each (no Objeto column)
+    setRows(Array(4).fill(null).map(() => Array(5).fill("")));
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +76,7 @@ export default function ViagensModal() {
     loadMonthData(m);
   };
 
-  // Date masks for Data Saída (col 4) and Data Retorno (col 5)
+  // Date masks for Data Saída (col 3) and Data Retorno (col 4)
   const formatDDMM = (val: string) => {
     const digits = val.replace(/\D/g, "").slice(0, 4);
     if (digits.length <= 2) return digits;
@@ -66,7 +97,7 @@ export default function ViagensModal() {
   };
 
   const handleCellBlur = (rIdx: number, cIdx: number, val: string) => {
-    if (cIdx === 4 || cIdx === 5) {
+    if (cIdx === 3 || cIdx === 4) {
       const normalized = normalizeDDMM(val);
       updateCell(rIdx, cIdx, normalized);
     }
@@ -74,7 +105,7 @@ export default function ViagensModal() {
 
   const handleCellInput = (rIdx: number, cIdx: number, val: string) => {
     let finalVal = val;
-    if (cIdx === 4 || cIdx === 5) {
+    if (cIdx === 3 || cIdx === 4) {
       finalVal = formatDDMM(val);
     }
     updateCell(rIdx, cIdx, finalVal);
@@ -90,15 +121,34 @@ export default function ViagensModal() {
   };
 
   const addRow = () => {
-    setRows(prev => [...prev, Array(6).fill("")]);
+    setRows(prev => [...prev, Array(5).fill("")]);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!selectedMonth) return;
     // Filter out rows that are entirely empty
     const filteredRows = rows.filter(r => r.some(cell => cell.trim() !== ""));
+    
+    // Save to localStorage as fallback
     const payload = { month: selectedMonth, rows: filteredRows };
     localStorage.setItem(`viagens:${selectedMonth}`, JSON.stringify(payload));
+
+    // Save to server API
+    let savedOnServer = false;
+    try {
+      const response = await fetch("/api/viagens", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ month: selectedMonth, rows: filteredRows }),
+      });
+      if (response.ok) {
+        savedOnServer = true;
+      }
+    } catch (e) {
+      console.error("Failed to save voyages on server:", e);
+    }
 
     const [yyyy, mm] = selectedMonth.split("-");
     const monthNames = [
@@ -106,7 +156,12 @@ export default function ViagensModal() {
       "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
     ];
     const monthName = monthNames[parseInt(mm, 10) - 1] || mm;
-    showToast(`Tabela salva • ${monthName}/${yyyy}`);
+
+    if (savedOnServer) {
+      showToast(`Tabela salva no servidor • ${monthName}/${yyyy}`);
+    } else {
+      showToast(`Salva localmente (servidor indisponível) • ${monthName}/${yyyy}`, false);
+    }
   };
 
   const handlePrint = () => {
@@ -196,9 +251,9 @@ export default function ViagensModal() {
           <div className="hidden print:block mb-8 pb-4 border-b-2 border-slate-900">
             <div className="flex justify-between items-center w-full mb-6">
               {/* Left Logo (CAR) */}
-              <div className="relative w-28 h-10">
+              <div className="relative w-40 h-10">
                 <img
-                  src="/imagens/logo-car.png"
+                  src="https://www.ba.gov.br/car/sites/site-car/files/migracao_2024/arquivos/files/logo_docs.png"
                   alt="Logo CAR"
                   className="object-contain w-full h-full"
                 />
@@ -209,7 +264,7 @@ export default function ViagensModal() {
                 <img
                   src="https://www.ba.gov.br/comunicacao/modules/custom/bagov_base_blocks/assets/images/logo-governo-rodape.png"
                   alt="Governo da Bahia"
-                  className="object-contain w-full h-full filter brightness-0"
+                  className="object-contain w-full h-full"
                 />
               </div>
             </div>
@@ -234,7 +289,6 @@ export default function ViagensModal() {
                 <tr className="bg-[#F5F5F7] text-[#5C6479] font-bold border-b border-[#EAECEF] print:bg-slate-50 print:border-slate-800">
                   <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Comissão</th>
                   <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Convênio</th>
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Objeto</th>
                   <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Município</th>
                   <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Data saída</th>
                   <th className="p-3 print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Data retorno</th>
@@ -247,36 +301,26 @@ export default function ViagensModal() {
                       <td
                         key={cIdx}
                         className={`p-1 border-r border-black/5 last:border-r-0 print:border-slate-800 print:p-2 ${
-                          cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center" : "text-left"
+                          cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center" : "text-left"
                         }`}
                       >
                         {/* Screen editing inputs (Fixes backwards typing and cursor jump) */}
                         <div className="print:hidden">
-                          {cIdx === 2 ? (
-                            <textarea
-                              rows={1}
-                              value={cellVal}
-                              onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
-                              onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
-                              className="w-full bg-transparent border-0 outline-none px-2 py-1 text-xs font-semibold text-[#2d3142] resize-y min-h-[28px] focus:ring-1 focus:ring-[#28cd41]/20 rounded"
-                            />
-                          ) : (
-                            <input
-                              type="text"
-                              value={cellVal}
-                              onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
-                              onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
-                              placeholder={cIdx === 4 || cIdx === 5 ? "DD/MM" : ""}
-                              className={`w-full bg-transparent border-0 outline-none px-2 py-1 text-xs font-semibold ${
-                                cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center font-mono" : "text-left"
-                              } text-[#2d3142] focus:ring-1 focus:ring-[#28cd41]/20 rounded`}
-                            />
-                          )}
+                          <input
+                            type="text"
+                            value={cellVal}
+                            onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
+                            onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
+                            placeholder={cIdx === 3 || cIdx === 4 ? "DD/MM" : ""}
+                            className={`w-full bg-transparent border-0 outline-none px-2 py-1 text-xs font-semibold ${
+                              cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
+                            } text-[#2d3142] focus:ring-1 focus:ring-[#28cd41]/20 rounded`}
+                          />
                         </div>
 
                         {/* Print static view (Fully displays wrapped text) */}
                         <div className={`hidden print:block font-medium text-black leading-snug ${
-                          cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center font-mono" : "text-left"
+                          cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
                         }`}>
                           {cellVal || "\u00A0"}
                         </div>
