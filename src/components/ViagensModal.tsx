@@ -128,11 +128,41 @@ export default function ViagensModal() {
 
   return (
     <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-end print:absolute print:inset-0 print:bg-white print:backdrop-blur-none print:z-0">
+      {/* Print-specific style override */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          /* Hide main dashboard, sidebar and modals overlay background during voyages print */
+          body > :not(#viagens-print-area-container) {
+            display: none !important;
+          }
+          #viagens-print-area-container {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          @page {
+            size: portrait;
+            margin: 1.5cm;
+          }
+        }
+      `}} />
+
       {/* Click Outside overlay */}
       <div className="absolute inset-0 print:hidden" onClick={() => setIsViagensOpen(false)} />
 
-      {/* Slide-out Sheet Card */}
-      <div className="relative w-full max-w-[850px] h-full bg-white/95 backdrop-blur-[25px] shadow-[0_0_50px_rgba(0,0,0,0.1)] border-l border-black/5 p-6 flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 print:static print:w-full print:shadow-none print:border-none print:p-0 print:m-0">
+      {/* Slide-out Sheet Card / Print Area Container */}
+      <div 
+        id="viagens-print-area-container"
+        className="relative w-full max-w-[850px] h-full bg-white/95 backdrop-blur-[25px] shadow-[0_0_50px_rgba(0,0,0,0.1)] border-l border-black/5 p-6 flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 print:static print:w-full print:shadow-none print:border-none print:p-0 print:m-0"
+      >
         <div className="flex flex-col gap-6 overflow-y-auto pr-1 custom-scrollbar print:overflow-visible print:pr-0">
           
           {/* Modal Header */}
@@ -163,52 +193,93 @@ export default function ViagensModal() {
           </div>
 
           {/* PRINT ONLY Header */}
-          <div className="hidden print:block mb-6 text-center">
-            <div className="flex justify-center mb-4">
-              <Image
-                src="/imagens/logo-car.png"
-                alt="Logo CAR"
-                width={120}
-                height={40}
-                className="object-contain"
-              />
+          <div className="hidden print:block mb-8 pb-4 border-b-2 border-slate-900">
+            <div className="flex justify-between items-center w-full mb-6">
+              {/* Left Logo (CAR) */}
+              <div className="relative w-28 h-10">
+                <img
+                  src="/imagens/logo-car.png"
+                  alt="Logo CAR"
+                  className="object-contain w-full h-full"
+                />
+              </div>
+              
+              {/* Right Logo (Governo da Bahia) */}
+              <div className="relative w-44 h-12">
+                <img
+                  src="https://www.ba.gov.br/comunicacao/modules/custom/bagov_base_blocks/assets/images/logo-governo-rodape.png"
+                  alt="Governo da Bahia"
+                  className="object-contain w-full h-full filter brightness-0"
+                />
+              </div>
             </div>
-            <h1 className="text-sm font-extrabold text-black uppercase tracking-wide">
-              Programação de viagem do setor de Tomada de Contas Especial
-            </h1>
-            <p className="text-xs font-bold text-slate-700 mt-2">
-              Mês de Referência: <span className="underline">{getFormattedMonthLabel()}</span>
-            </p>
+            
+            <div className="text-center">
+              <h1 className="text-[14pt] font-black text-slate-950 uppercase tracking-tight leading-none">
+                Relação de Viagens e Programação de Diárias
+              </h1>
+              <h2 className="text-[10pt] font-bold text-slate-600 mt-1.5 uppercase tracking-wider">
+                Setor de Tomada de Contas Especial (TCE)
+              </h2>
+              <div className="inline-block mt-3 px-4 py-1 border border-slate-950 rounded bg-slate-50 text-[10pt] font-extrabold text-slate-950">
+                Mês de Referência: <span className="underline decoration-2">{getFormattedMonthLabel()}</span>
+              </div>
+            </div>
           </div>
 
           {/* Viagens Spreadsheet Table */}
-          <div className="border border-[#EAECEF] rounded-[12px] bg-white overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.02)] print:border-slate-300 print:rounded-none">
-            <table className="w-full border-collapse text-xs print:text-[11pt]">
+          <div className="border border-[#EAECEF] rounded-[12px] bg-white overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.02)] print:border-slate-800 print:rounded-none print:shadow-none">
+            <table className="w-full border-collapse text-xs print:text-[10pt]">
               <thead>
-                <tr className="bg-[#F5F5F7] text-[#5C6479] font-bold border-b border-[#EAECEF] print:bg-slate-100 print:border-slate-300">
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-300 text-left">Comissão</th>
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-300 text-left">Convênio</th>
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-300 text-left">Objeto</th>
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-300 text-left">Município</th>
-                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-300 text-center w-24">Data saída</th>
-                  <th className="p-3 print:border-slate-300 text-center w-24">Data retorno</th>
+                <tr className="bg-[#F5F5F7] text-[#5C6479] font-bold border-b border-[#EAECEF] print:bg-slate-50 print:border-slate-800">
+                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Comissão</th>
+                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Convênio</th>
+                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Objeto</th>
+                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-left print:text-black font-extrabold uppercase tracking-wide">Município</th>
+                  <th className="p-3 border-r border-[#EAECEF] print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Data saída</th>
+                  <th className="p-3 print:border-slate-800 text-center print:text-black font-extrabold uppercase tracking-wide w-24">Data retorno</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row, rIdx) => (
-                  <tr key={rIdx} className="border-b border-[#EAECEF] print:border-slate-300 odd:bg-white even:bg-slate-50/40 print:even:bg-slate-50/80">
+                  <tr key={rIdx} className="border-b border-[#EAECEF] print:border-slate-800 print:bg-white odd:bg-white even:bg-slate-50/40 print:even:bg-white">
                     {row.map((cellVal, cIdx) => (
                       <td
                         key={cIdx}
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={(e) => handleCellBlur(rIdx, cIdx, e.currentTarget.textContent || "")}
-                        onInput={(e) => handleCellInput(rIdx, cIdx, e.currentTarget.textContent || "")}
-                        className={`p-3 outline-none border-r border-black/5 last:border-r-0 min-h-[36px] font-medium text-[#2d3142] print:border-slate-300 print:text-black ${
-                          cIdx === 4 || cIdx === 5 ? "text-center font-mono" : "text-left"
+                        className={`p-1 border-r border-black/5 last:border-r-0 print:border-slate-800 print:p-2 ${
+                          cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center" : "text-left"
                         }`}
                       >
-                        {cellVal}
+                        {/* Screen editing inputs (Fixes backwards typing and cursor jump) */}
+                        <div className="print:hidden">
+                          {cIdx === 2 ? (
+                            <textarea
+                              rows={1}
+                              value={cellVal}
+                              onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
+                              onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
+                              className="w-full bg-transparent border-0 outline-none px-2 py-1 text-xs font-semibold text-[#2d3142] resize-y min-h-[28px] focus:ring-1 focus:ring-[#28cd41]/20 rounded"
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              value={cellVal}
+                              onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
+                              onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
+                              placeholder={cIdx === 4 || cIdx === 5 ? "DD/MM" : ""}
+                              className={`w-full bg-transparent border-0 outline-none px-2 py-1 text-xs font-semibold ${
+                                cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center font-mono" : "text-left"
+                              } text-[#2d3142] focus:ring-1 focus:ring-[#28cd41]/20 rounded`}
+                            />
+                          )}
+                        </div>
+
+                        {/* Print static view (Fully displays wrapped text) */}
+                        <div className={`hidden print:block font-medium text-black leading-snug ${
+                          cIdx === 1 || cIdx === 4 || cIdx === 5 ? "text-center font-mono" : "text-left"
+                        }`}>
+                          {cellVal || "\u00A0"}
+                        </div>
                       </td>
                     ))}
                   </tr>
