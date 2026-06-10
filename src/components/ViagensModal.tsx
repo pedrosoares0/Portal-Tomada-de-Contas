@@ -8,6 +8,7 @@ export default function ViagensModal() {
   const { isViagensOpen, setIsViagensOpen, showToast } = useApp();
   const [selectedMonth, setSelectedMonth] = useState("");
   const [rows, setRows] = useState<string[][]>([]);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   // Pre-fill current month on mount
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function ViagensModal() {
   // Load viajes data for the selected month
   const loadMonthData = async (month: string) => {
     if (!month) return;
-    
+
     // 1. Try loading from the server backend API
     try {
       const response = await fetch(`/api/viagens?month=${month}`);
@@ -128,7 +129,7 @@ export default function ViagensModal() {
     if (!selectedMonth) return;
     // Filter out rows that are entirely empty
     const filteredRows = rows.filter(r => r.some(cell => cell.trim() !== ""));
-    
+
     // Save to localStorage as fallback
     const payload = { month: selectedMonth, rows: filteredRows };
     localStorage.setItem(`viagens:${selectedMonth}`, JSON.stringify(payload));
@@ -179,10 +180,12 @@ export default function ViagensModal() {
     return `${monthName}/${yyyy}`;
   };
 
-  const handleClear = async () => {
+  const handleClear = () => {
     if (!selectedMonth) return;
-    if (!confirm(`Tem certeza que deseja apagar permanentemente todos os registros de viagens de ${getFormattedMonthLabel()}?`)) return;
-    
+    setIsConfirmOpen(true);
+  };
+
+  const executeClear = async () => {
     setRows(Array(4).fill(null).map(() => Array(5).fill("")));
     localStorage.removeItem(`viagens:${selectedMonth}`);
 
@@ -210,7 +213,8 @@ export default function ViagensModal() {
   return (
     <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-end print:absolute print:inset-0 print:bg-white print:backdrop-blur-none print:z-0">
       {/* Print-specific style override */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           /* Hide sidebar, main content of page, toast alerts and other screen elements */
           .sidebar, aside, .main, main, [role="status"], .print\\:hidden {
@@ -257,17 +261,17 @@ export default function ViagensModal() {
       <div className="absolute inset-0 print:hidden" onClick={() => setIsViagensOpen(false)} />
 
       {/* Slide-out Sheet Card / Print Area Container */}
-      <div 
+      <div
         id="viagens-print-area-container"
         className="relative w-full max-w-[850px] h-full bg-[#F8F9FA] shadow-[0_0_50px_rgba(0,0,0,0.08)] border-l border-black/5 p-6 flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 print:static print:w-full print:shadow-none print:border-none print:p-0 print:m-0 print:bg-white"
       >
         <div className="flex flex-col gap-6 overflow-y-auto pr-1 custom-scrollbar print:overflow-visible print:pr-0">
-          
+
           {/* Modal Header */}
           <div className="flex justify-between items-center pb-3 border-b border-black/[0.06] print:hidden">
             <div>
               <h2 className="text-sm font-extrabold text-[#1d1d1f] tracking-tight">Relação de Viagens</h2>
-              <p className="text-[10px] text-[#86868b] mt-0.5">Programações de viagem e diárias do setor</p>
+              <p className="text-[10px] text-[#86868b] mt-0.5">Tomada de Contas</p>
             </div>
             <div className="flex items-center gap-3">
               {/* Select Month Pill */}
@@ -292,7 +296,7 @@ export default function ViagensModal() {
 
           {/* Simulated A4 Paper Sheet container */}
           <div className="bg-white rounded-2xl border border-black/[0.04] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 flex flex-col gap-6 print:p-0 print:border-0 print:shadow-none print:rounded-none">
-            
+
             {/* Document Header (Logos + Title) */}
             <div className="flex flex-col items-center">
               <div className="flex justify-between items-center w-full mb-4 print:mb-6">
@@ -304,7 +308,7 @@ export default function ViagensModal() {
                     className="h-full w-auto object-contain"
                   />
                 </div>
-                
+
                 {/* Right Logo (Governo da Bahia) */}
                 <div className="relative h-9 sm:h-10 w-auto">
                   <img
@@ -314,19 +318,19 @@ export default function ViagensModal() {
                   />
                 </div>
               </div>
-              
+
               <div className="text-center w-full mt-2">
                 <h1 className="text-xs sm:text-sm font-black text-slate-850 uppercase tracking-widest leading-none print:text-[12pt] print:text-slate-900">
-                  Relação de Viagens e Programação de Diárias
+                  Relação de Viagens
                 </h1>
                 <h2 className="text-[9px] sm:text-[10px] font-bold text-slate-400 mt-1.5 uppercase tracking-widest print:text-[8pt] print:text-slate-500">
                   Setor de Tomada de Contas Especial (TCE)
                 </h2>
-                
+
                 {/* Gradient divider line */}
                 <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-200 to-transparent my-4 print:bg-slate-300 print:my-3" />
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#28cd41]/5 text-[#28cd41] rounded-full text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider print:border print:border-slate-200 print:bg-slate-50 print:text-slate-800 print:rounded print:px-2.5 print:py-0.5 print:mt-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider print:border print:border-slate-200 print:bg-slate-50 print:text-slate-800 print:rounded print:px-2.5 print:py-0.5 print:mt-1">
                   Mês de Referência: <span className="underline decoration-2 ml-1">{getFormattedMonthLabel()}</span>
                 </div>
               </div>
@@ -350,9 +354,8 @@ export default function ViagensModal() {
                       {row.map((cellVal, cIdx) => (
                         <td
                           key={cIdx}
-                          className={`p-1.5 border-r border-slate-100 last:border-r-0 print:border-slate-300 print:p-2.5 ${
-                            cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center" : "text-left"
-                          }`}
+                          className={`p-1.5 border-r border-slate-100 last:border-r-0 print:border-slate-300 print:p-2.5 ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center" : "text-left"
+                            }`}
                         >
                           {/* Screen editing inputs (Fixes backwards typing and cursor jump) */}
                           <div className="print:hidden">
@@ -362,16 +365,14 @@ export default function ViagensModal() {
                               onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
                               onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
                               placeholder={cIdx === 3 || cIdx === 4 ? "DD/MM" : ""}
-                              className={`w-full bg-transparent border-0 outline-none px-2 py-0.5 text-xs font-semibold ${
-                                cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
-                              } text-slate-700 focus:bg-slate-50/50 rounded transition-all duration-150`}
+                              className={`w-full bg-transparent border-0 outline-none px-2 py-0.5 text-xs font-semibold ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
+                                } text-slate-700 focus:bg-slate-50/50 rounded transition-all duration-150`}
                             />
                           </div>
 
                           {/* Print static view (Fully displays wrapped text) */}
-                          <div className={`hidden print:block text-slate-800 leading-normal ${
-                            cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left font-sans"
-                          }`}>
+                          <div className={`hidden print:block text-slate-800 leading-normal ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left font-sans"
+                            }`}>
                             {cellVal || "\u00A0"}
                           </div>
                         </td>
@@ -401,7 +402,7 @@ export default function ViagensModal() {
               <Trash2 className="w-3.5 h-3.5" /> Limpar Tabela
             </button>
           </div>
-          
+
           <div className="flex gap-3">
             <button
               onClick={handlePrint}
@@ -418,6 +419,43 @@ export default function ViagensModal() {
           </div>
         </div>
       </div>
+
+      {/* Custom Confirm Dialog Overlay */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-black/25 backdrop-blur-[4px] z-[200] flex items-center justify-center animate-in fade-in duration-200 print:hidden">
+          <div className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-black/5 p-6 max-w-sm w-full mx-4 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+            {/* Warning Icon Container */}
+            <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 mb-4 animate-bounce">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            
+            {/* Title & Description */}
+            <h3 className="text-sm font-extrabold text-[#1d1d1f] tracking-tight">Apagar registros?</h3>
+            <p className="text-[11px] text-[#86868b] mt-2 leading-relaxed">
+              Tem certeza que deseja apagar permanentemente todos os registros de viagens de <strong className="text-slate-750 font-bold">{getFormattedMonthLabel()}</strong>? Esta ação não poderá ser desfeita.
+            </p>
+            
+            {/* Buttons Row */}
+            <div className="flex gap-2.5 w-full mt-6">
+              <button
+                onClick={() => setIsConfirmOpen(false)}
+                className="flex-1 px-4 h-9 bg-black/5 hover:bg-black/10 text-[#2d3142] rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setIsConfirmOpen(false);
+                  executeClear();
+                }}
+                className="flex-1 px-4 h-9 bg-rose-500 hover:bg-rose-600 text-white rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none shadow-[0_2px_10px_rgba(244,63,94,0.2)] transition-colors"
+              >
+                Apagar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
