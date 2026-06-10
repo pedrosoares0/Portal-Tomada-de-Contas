@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
-import { X, Plus, Printer, Save } from "lucide-react";
+import { X, Plus, Printer, Save, Trash2 } from "lucide-react";
 
 export default function ViagensModal() {
   const { isViagensOpen, setIsViagensOpen, showToast } = useApp();
@@ -179,6 +179,32 @@ export default function ViagensModal() {
     return `${monthName}/${yyyy}`;
   };
 
+  const handleClear = async () => {
+    if (!selectedMonth) return;
+    if (!confirm(`Tem certeza que deseja apagar permanentemente todos os registros de viagens de ${getFormattedMonthLabel()}?`)) return;
+    
+    setRows(Array(4).fill(null).map(() => Array(5).fill("")));
+    localStorage.removeItem(`viagens:${selectedMonth}`);
+
+    try {
+      const response = await fetch("/api/viagens", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ month: selectedMonth, rows: [] }),
+      });
+      if (response.ok) {
+        showToast("Dados do mês apagados com sucesso!");
+      } else {
+        showToast("Erro ao apagar dados no servidor", false);
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Erro de rede ao apagar dados", false);
+    }
+  };
+
   if (!isViagensOpen) return null;
 
   return (
@@ -335,12 +361,20 @@ export default function ViagensModal() {
 
         {/* Modal Actions Footer */}
         <div className="flex justify-between items-center pt-4 border-t border-black/5 mt-4 print:hidden">
-          <button
-            onClick={addRow}
-            className="inline-flex items-center gap-1.5 px-4 h-9 bg-black/5 text-[#2d3142] hover:bg-black/10 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
-          >
-            <Plus className="w-3.5 h-3.5" /> Adicionar linha
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={addRow}
+              className="inline-flex items-center gap-1.5 px-4 h-9 bg-black/5 text-[#2d3142] hover:bg-black/10 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
+            >
+              <Plus className="w-3.5 h-3.5" /> Adicionar linha
+            </button>
+            <button
+              onClick={handleClear}
+              className="inline-flex items-center gap-1.5 px-4 h-9 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Limpar Tabela
+            </button>
+          </div>
           
           <div className="flex gap-3">
             <button
