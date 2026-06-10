@@ -61,6 +61,7 @@ export default function BentoWidgets() {
   const widgetsList = [
     {
       title: "Números do Setor",
+      mobileLabel: "Indicadores",
       desc: "Dados estatísticos",
       iconSrc: "/imagens/logo-dados.png",
       hoverBorderClass: "hover:border-[#28CD41]/20 hover:shadow-[0_12px_24px_rgba(40,205,65,0.06)]",
@@ -69,6 +70,7 @@ export default function BentoWidgets() {
     },
     {
       title: "Controle de Prazos",
+      mobileLabel: "Prazos",
       desc: "Prazos de portarias",
       iconSrc: "/imagens/logo-prazos.png",
       hoverBorderClass: "hover:border-[#FF9500]/20 hover:shadow-[0_12px_24px_rgba(255,149,0,0.06)]",
@@ -76,6 +78,7 @@ export default function BentoWidgets() {
     },
     {
       title: "Relação de Viagens",
+      mobileLabel: "Viagens",
       desc: "Programações de campo",
       iconSrc: "/imagens/logo-viagens.png",
       hoverBorderClass: "hover:border-[#00BCD4]/20 hover:shadow-[0_12px_24px_rgba(0,188,212,0.06)]",
@@ -83,7 +86,8 @@ export default function BentoWidgets() {
       onClick: () => setIsViagensOpen(true)
     },
     {
-      title: "Portarias e Ofícios",
+      title: "Portarias",
+      mobileLabel: "Portarias",
       desc: "Controle de Tomadas e TCE's",
       iconSrc: "/imagens/portarias.png",
       hoverBorderClass: "hover:border-[#007AFF]/20 hover:shadow-[0_12px_24px_rgba(0,122,255,0.06)]",
@@ -92,6 +96,7 @@ export default function BentoWidgets() {
     },
     {
       title: "Notificações TCE",
+      mobileLabel: "Notificações",
       desc: "Alertas de controle",
       iconSrc: "/imagens/logo-TCE.png",
       hoverBorderClass: "hover:border-[#FF3B30]/20 hover:shadow-[0_12px_24px_rgba(255,59,48,0.06)]",
@@ -100,18 +105,48 @@ export default function BentoWidgets() {
   ];
 
   return (
-    <div className="bottom-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full print:hidden">
-      {widgetsList.map((w, idx) => (
-        <Widget
-          key={idx}
-          title={w.title}
-          desc={w.desc}
-          iconSrc={w.iconSrc}
-          hoverBorderClass={w.hoverBorderClass}
-          hoverTextClass={w.hoverTextClass}
-          onClick={w.onClick}
-        />
-      ))}
-    </div>
+    <>
+      {/* Mobile: Compact iOS-style app icon dock */}
+      <div className="flex items-start justify-center gap-5 w-full py-2 md:hidden print:hidden overflow-x-auto custom-scrollbar">
+        {widgetsList.map((w, idx) => (
+          <motion.button
+            key={idx}
+            onClick={w.onClick}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            className="flex flex-col items-center gap-1 cursor-pointer outline-none border-0 bg-transparent flex-shrink-0"
+          >
+            <div className="w-[48px] h-[48px] rounded-[12px] bg-white/80 border border-black/[0.04] shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.6)] flex items-center justify-center hover:bg-white active:scale-95 transition-all duration-150">
+              <Image
+                src={w.iconSrc}
+                alt={w.title}
+                width={28}
+                height={28}
+                className="object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.08)]"
+                unoptimized
+              />
+            </div>
+            <span className="text-[9px] font-bold text-[#86868b] leading-tight truncate max-w-[64px] text-center">
+              {w.mobileLabel}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Desktop: Full rich widget cards */}
+      <div className="bottom-row hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full print:hidden">
+        {widgetsList.map((w, idx) => (
+          <Widget
+            key={idx}
+            title={w.title}
+            desc={w.desc}
+            iconSrc={w.iconSrc}
+            hoverBorderClass={w.hoverBorderClass}
+            hoverTextClass={w.hoverTextClass}
+            onClick={w.onClick}
+          />
+        ))}
+      </div>
+    </>
   );
 }

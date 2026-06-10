@@ -71,12 +71,14 @@ export default function SyncModal() {
   if (!isSyncOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-end transition-opacity duration-300">
+    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-center items-end md:justify-end md:items-stretch transition-opacity duration-300">
       {/* Click Outside overlay */}
       <div className="absolute inset-0" onClick={() => setIsSyncOpen(false)} />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-[500px] h-full bg-white/95 backdrop-blur-[25px] shadow-[0_0_50px_rgba(0,0,0,0.1)] border-l border-black/5 p-6 flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300">
+      <div className="relative w-full max-w-[500px] h-[92vh] md:h-full bg-white/95 backdrop-blur-[25px] shadow-[0_0_50px_rgba(0,0,0,0.1)] border-t md:border-t-0 md:border-l border-black/5 rounded-t-[24px] md:rounded-t-none md:rounded-l-[24px] p-6 flex flex-col justify-between z-10 animate-in slide-in-from-bottom md:slide-in-from-right duration-300">
+        {/* iOS style handle indicator at the top for mobile bottom sheets */}
+        <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mb-2 md:hidden flex-shrink-0" />
         <div className="flex flex-col gap-6 overflow-y-auto pr-1 custom-scrollbar">
           {/* Header */}
           <div className="flex justify-between items-center pb-4 border-b border-black/5">

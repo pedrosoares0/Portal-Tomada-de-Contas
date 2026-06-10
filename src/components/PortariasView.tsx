@@ -16,7 +16,8 @@ import {
   Layers,
   ChevronRight,
   ClipboardList,
-  User
+  User,
+  X
 } from "lucide-react";
 import { getCommissionAvatars, formatDateToDDMMYYYY, parseDate, PEOPLE } from "@/lib/utils";
 
@@ -560,26 +561,46 @@ export default function PortariasView() {
           </div>
 
           {/* Capsule Status segment control */}
-          <div className="flex items-center gap-0.5 p-0.5 bg-[#F5F6F8]/80 border border-[#E9EAEB] rounded-lg overflow-x-auto h-8">
+          <div className="flex p-0.5 bg-black/[0.03] border border-black/[0.02] rounded-[10px] items-center gap-0.5 flex-shrink-0 h-9">
             {(["all", "pending", "finalized"] as const).map((filter) => {
               const active = statusFilter === filter;
               const label = filter === "all" ? "Geral" : filter === "pending" ? "Pendentes" : "Finalizados";
               const count = filter === "all" ? tabCounts.geral : filter === "pending" ? tabCounts.pending : tabCounts.finalized;
-              const Icon = filter === "all" ? ClipboardList : filter === "pending" ? Clock : CheckCircle;
+              
+              let Icon = ClipboardList;
+              let colorClass = "text-[#86868b]";
+              let countBadgeClass = active ? "bg-slate-550 text-white" : "bg-black/[0.04] text-[#86868b] group-hover:bg-black/10 group-hover:text-[#1d1d1f]";
+
+              if (filter === "pending") {
+                Icon = Clock;
+                colorClass = active ? "text-[#f97316]" : "text-[#9ca3af] group-hover:text-[#f97316]";
+                countBadgeClass = active ? "bg-[#f97316]/10 text-[#f97316]" : "bg-black/[0.04] text-[#86868b] group-hover:bg-[#f97316]/10 group-hover:text-[#f97316]";
+              } else if (filter === "finalized") {
+                Icon = CheckCircle;
+                colorClass = active ? "text-[#28cd41]" : "text-[#9ca3af] group-hover:text-[#28cd41]";
+                countBadgeClass = active ? "bg-[#28cd41]/10 text-[#28cd41]" : "bg-black/[0.04] text-[#86868b] group-hover:bg-[#28cd41]/10 group-hover:text-[#28cd41]";
+              }
 
               return (
                 <button
                   key={filter}
                   onClick={() => setStatusFilter(filter)}
-                  className={`h-6 px-2.5 rounded-md text-[10px] font-bold flex items-center gap-1 transition-all duration-200 outline-none select-none border cursor-pointer ${active
-                    ? "bg-white border-black/[0.03] shadow-[0_1.5px_4px_rgba(0,0,0,0.04)] text-[#1d1d1f]"
-                    : "bg-transparent border-transparent text-[#86868b] hover:text-[#1d1d1f]"
-                    }`}
+                  className={`relative h-8 px-3.5 rounded-[8px] flex items-center gap-1.5 text-[11px] font-semibold cursor-pointer border-0 bg-transparent transition-colors duration-200 outline-none select-none group ${
+                    active ? "text-[#1d1d1f]" : "text-[#86868b] hover:text-[#1d1d1f]"
+                  }`}
                 >
-                  <Icon className={`w-3 h-3 ${active ? "text-[#28CD41]" : "text-[#86868b]"}`} />
+                  {/* Active Tab Sliding Background */}
+                  {active && (
+                    <motion.div
+                      layoutId="active-portarias-status-bg"
+                      className="absolute inset-0 bg-white rounded-[7px] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_1px_rgba(0,0,0,0.01)] border border-[#E5E7EB] -z-10"
+                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    />
+                  )}
+
+                  <Icon className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-105 ${colorClass}`} />
                   <span>{label}</span>
-                  <span className={`text-[8px] px-1 py-0.5 rounded-full font-black ml-0.5 transition-colors ${active ? "bg-slate-500 text-white" : "bg-black/[0.04] text-[#86868b]"
-                    }`}>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold transition-all duration-200 leading-none ${countBadgeClass}`}>
                     {count}
                   </span>
                 </button>
@@ -599,7 +620,7 @@ export default function PortariasView() {
         <div className="flex flex-col flex-1 min-h-0">
 
           {/* Premium 3D Paper Folders Grid (Estilo Referência) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 pb-6 border-b border-black/[0.04] overflow-visible">
+          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5 md:gap-4 pb-6 border-b border-black/[0.04] overflow-visible">
             {FOLDERS.map((folder) => {
               const isActive = selectedYear === folder.id;
               const stats = folderStats[folder.id] || { total: 0, finalized: 0, pending: 0 };
@@ -612,7 +633,7 @@ export default function PortariasView() {
                     setSelectedYear(folder.id);
                     setSelectedRowKey(null);
                   }}
-                  className="relative w-full h-[135px] group cursor-pointer overflow-visible pt-4"
+                  className="relative w-full h-[100px] md:h-[135px] group cursor-pointer overflow-visible pt-3 md:pt-4"
                 >
                   {/* Layer 1: Folder Back Cover & Tab */}
                   <div
@@ -632,7 +653,7 @@ export default function PortariasView() {
 
                   {/* Layer 2: White Paper Sheet inside the Folder (Slides up on hover) */}
                   <div
-                    className="absolute top-2 left-2.5 right-2.5 h-[76px] bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] border border-black/[0.03] transition-all duration-300 ease-out z-10 p-2 overflow-hidden flex flex-col gap-1 select-none transform group-hover:-translate-y-4.5 group-hover:rotate-[-1deg]"
+                    className="absolute top-1.5 md:top-2 left-2 md:left-2.5 right-2 md:right-2.5 h-[50px] md:h-[76px] bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] border border-black/[0.03] transition-all duration-300 ease-out z-10 p-1.5 md:p-2 overflow-hidden flex flex-col gap-1 select-none transform group-hover:-translate-y-4.5 group-hover:rotate-[-1deg]"
                   >
                     {/* Mock text lines on paper document */}
                     <div className="flex flex-col gap-1 opacity-[0.35]">
@@ -644,7 +665,7 @@ export default function PortariasView() {
                   </div>
 
                   {/* Layer 3: Folder Front Pocket with Sloped Curve & Glassmorphism */}
-                  <div className={`absolute bottom-0 left-0 right-0 h-[98px] z-20 overflow-hidden rounded-b-3xl transition-all duration-300 border-b border-x ${isActive ? "border-white/10" : "border-black/[0.04]"
+                  <div className={`absolute bottom-0 left-0 right-0 h-[72px] md:h-[98px] z-20 overflow-hidden rounded-b-2xl md:rounded-b-3xl transition-all duration-300 border-b border-x ${isActive ? "border-white/10" : "border-black/[0.04]"
                     }`}>
                     {/* SVG background with sloped wave curve (starts high left, dips right) */}
                     <svg
@@ -669,16 +690,16 @@ export default function PortariasView() {
                     <div className={`absolute inset-0 p-3.5 pt-6.5 flex flex-col justify-between select-none z-30 backdrop-blur-[6px] rounded-b-3xl ${isActive ? "text-white" : "text-[#1d1d1f]"
                       }`}>
                       <div className="flex flex-col leading-snug">
-                        <span className={`text-[12.5px] font-black tracking-tight transition-colors duration-300 ${isActive ? "text-white" : "text-[#1d1d1f]"}`}>
-                          {folder.label === "20-16" ? "Anos 20-16" : `Ano ${folder.label}`}
+                        <span className={`text-[10px] md:text-[12.5px] font-black tracking-tight transition-colors duration-300 ${isActive ? "text-white" : "text-[#1d1d1f]"}`}>
+                          {folder.label === "20-16" ? "20-16" : folder.label}
                         </span>
-                        <span className={`text-[9.5px] font-bold mt-1 transition-colors duration-300 ${isActive ? "text-white/80" : "text-[#86868b]"}`}>
+                        <span className={`text-[8px] md:text-[9.5px] font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? "text-white/80" : "text-[#86868b]"}`}>
                           {stats.total} {stats.total === 1 ? "Tomada" : "Tomadas"}
                         </span>
                       </div>
 
                       {/* Bottom breakdown */}
-                      <div className={`flex justify-between items-center border-t pt-2 select-none text-[8px] font-extrabold transition-colors duration-300 ${isActive ? "border-white/12 text-white/85" : "border-black/[0.04] text-slate-500"
+                      <div className={`hidden md:flex justify-between items-center border-t pt-2 select-none text-[8px] font-extrabold transition-colors duration-300 ${isActive ? "border-white/12 text-white/85" : "border-black/[0.04] text-slate-500"
                         }`}>
                         <span className="flex items-center gap-1.5">
                           <span className={`w-1 h-1 rounded-full ${isActive ? "bg-white" : "bg-emerald-500"}`} />
@@ -697,7 +718,7 @@ export default function PortariasView() {
           </div>
 
           {/* Master-Detail Split View Pane */}
-          <div className="flex flex-col lg:flex-row flex-1 min-h-[480px] mt-6 gap-6 items-stretch">
+          <div className="flex flex-col lg:flex-row flex-1 min-h-[480px] mt-4 md:mt-6 gap-4 md:gap-6 items-stretch">
             <div className="flex-[3] flex flex-col bg-white border border-black/[0.04] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.01)] p-4 min-w-0">
               <div className="pb-3 border-b border-black/[0.03] mb-3 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
@@ -758,9 +779,9 @@ export default function PortariasView() {
 
                           {/* Detail Indicators */}
                           <div className="flex items-center gap-4 flex-shrink-0 pl-3">
-                            {/* Commission avatars */}
+                            {/* Commission avatars - hidden on mobile */}
                             {avatars.length > 0 && (
-                              <div className="flex -space-x-1.5 items-center">
+                              <div className="hidden md:flex -space-x-1.5 items-center">
                                 {avatars.slice(0, 3).map((av, avIdx) => (
                                   <div key={avIdx} className="w-5 h-5 rounded-full border border-white overflow-hidden bg-slate-50 shadow-sm" title={av.name}>
                                     <img src={av.img} alt={av.name} className="w-full h-full object-contain" />
@@ -769,9 +790,9 @@ export default function PortariasView() {
                               </div>
                             )}
 
-                            {/* Status indicator */}
+                            {/* Status indicator - hidden on mobile (dot is enough) */}
                             <span
-                              className={`text-[9.5px] font-bold px-2 py-0.5 rounded-md leading-none ${isFinalized
+                              className={`hidden md:inline-block text-[9.5px] font-bold px-2 py-0.5 rounded-md leading-none ${isFinalized
                                 ? "bg-emerald-50 text-emerald-700 border border-emerald-500/10"
                                 : "bg-orange-50 text-orange-700 border border-orange-500/10"
                                 }`}
@@ -789,8 +810,9 @@ export default function PortariasView() {
               </div>
             </div>
 
-            {/* Right Column: Premium Inspector Panel */}
-            <div className="flex-[2] flex flex-col bg-white border border-black/[0.04] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.01)] p-4 min-w-[280px]">
+            {/* Right Column: Premium Inspector Panel — Desktop inline, Mobile floating bottom sheet */}
+            {/* Desktop panel */}
+            <div className="hidden lg:flex flex-[2] flex-col bg-white border border-black/[0.04] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.01)] p-4 min-w-[280px]">
               <div className="pb-3 border-b border-black/[0.03] mb-4 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <FileSpreadsheet className="w-4 h-4 text-[#28CD41]" />
@@ -988,6 +1010,196 @@ export default function PortariasView() {
                 </AnimatePresence>
               </div>
             </div>
+
+            {/* Mobile Floating Detail Sheet */}
+            <AnimatePresence>
+              {selectedRow && (
+                <>
+                  {/* Backdrop Blur Overlay */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSelectedRowKey(null)}
+                    className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] lg:hidden"
+                  />
+
+                  {/* Bottom Sheet Drawer */}
+                  <motion.div
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                    className="fixed inset-x-0 bottom-0 z-50 lg:hidden bg-[#F8F9FA] rounded-t-[24px] border-t border-black/5 shadow-[0_-12px_40px_rgba(0,0,0,0.1)] max-h-[75vh] flex flex-col"
+                  >
+                    {/* Handle + Header */}
+                    <div className="flex flex-col items-center pt-3 pb-2 px-4 border-b border-black/[0.04] flex-shrink-0">
+                      <div className="w-10 h-1 bg-black/10 rounded-full mb-3" />
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <FileSpreadsheet className="w-4 h-4 text-[#28CD41]" />
+                          <h3 className="text-xs font-black text-[#1d1d1f] tracking-tight">Convênio {selectedRow[0]}</h3>
+                          <span className="text-[9px] font-bold text-[#28CD41] bg-[#28CD41]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">Ficha</span>
+                        </div>
+                        <button
+                          onClick={() => setSelectedRowKey(null)}
+                          className="p-1.5 rounded-full bg-black/5 hover:bg-black/10 text-[#86868b] cursor-pointer outline-none border-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 pb-20">
+                      <div className="flex flex-col gap-4 text-[11px] text-[#1f2937]">
+                        {/* Meta Card */}
+                        <div className="bg-white border border-black/[0.02] rounded-xl p-3">
+                          <span className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider block">ID do Convênio</span>
+                          <span className="text-xs font-black text-[#1d1d1f] mt-0.5 block">{selectedRow[0]}</span>
+                          {selectedRow[1] && (
+                            <div className="text-[9.5px] font-bold text-[#6b7280] mt-1 flex items-center gap-1">
+                              <Layers className="w-3 h-3 stroke-[2px]" />
+                              Prog: {selectedRow[1]}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Code Input */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Código Portaria</label>
+                          <input
+                            type="text"
+                            value={selectedRow[10]}
+                            onChange={(e) => handleDetailChange(10, e.target.value.replace(/\D/g, ""))}
+                            className="w-full h-9 px-3 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-bold text-xs tabular-nums text-[#1d1d1f] bg-white focus:ring-2 focus:ring-[#28CD41]/5"
+                          />
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Status</label>
+                          <span className={`h-8 px-4 rounded-lg text-[10.5px] font-extrabold border flex items-center gap-1.5 select-none w-fit ${selectedRow[9].toLowerCase().includes("finalizado") || selectedRow[9].toLowerCase().includes("concluido")
+                            ? "bg-emerald-50/80 border-emerald-500/10 text-emerald-700"
+                            : "bg-orange-50/80 border-orange-500/10 text-orange-700"
+                            }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${selectedRow[9].toLowerCase().includes("finalizado") || selectedRow[9].toLowerCase().includes("concluido") ? "bg-emerald-500" : "bg-orange-500 animate-pulse"}`} />
+                            {selectedRow[9].toLowerCase().includes("finalizado") || selectedRow[9].toLowerCase().includes("concluido") ? "Finalizado" : "Pendente"}
+                          </span>
+                        </div>
+
+                        {/* 180-Day Deadline Panel */}
+                        {(() => {
+                          const status = String(selectedRow[9] || "").trim().toLowerCase();
+                          const isFinalized = status.includes("finalizado") || status.includes("concluido");
+
+                          if (isFinalized) return null;
+
+                          const dataTomada = selectedRow[7];
+                          if (!dataTomada) {
+                            return (
+                              <div className="bg-white border border-black/[0.03] rounded-xl p-3 flex items-center justify-center text-center text-gray-500 text-[10px] leading-snug">
+                                Instaure a tomada de contas inserindo a data na coluna "Data Tomada" para iniciar o prazo legal de 180 dias.
+                              </div>
+                            );
+                          }
+
+                          const deadline = getDeadlineStats(dataTomada);
+                          if (!deadline) return null;
+
+                          return (
+                            <div className={`border rounded-xl p-3.5 flex flex-col gap-2 bg-white ${deadline.colorClass}`}>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-wider select-none">{deadline.title}</span>
+                                <span className="text-[10px] font-black font-mono">
+                                  {deadline.isOverdue ? `Atraso: ${Math.abs(deadline.remaining)}d` : `Restam: ${deadline.remaining}d`}
+                                </span>
+                              </div>
+
+                              {/* Progress bar */}
+                              <div className="w-full h-1.5 bg-black/[0.04] rounded-full overflow-hidden relative">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-300 ${deadline.progressColor}`}
+                                  style={{ width: `${deadline.percent}%` }}
+                                />
+                              </div>
+
+                              <div className="flex justify-between items-center text-[9.5px] font-bold select-none">
+                                <span>{deadline.elapsed} dias decorridos</span>
+                                <span className="opacity-70">Prazo: 180 dias</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Município */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Município</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={selectedRow[2]}
+                              onChange={(e) => handleDetailChange(2, e.target.value)}
+                              className="w-full h-9 pl-8 pr-3 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-semibold text-xs text-[#1d1d1f] bg-white focus:ring-2 focus:ring-[#28CD41]/5"
+                            />
+                            <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#86868b]" />
+                          </div>
+                        </div>
+
+                        {/* Entidade */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Entidade</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={selectedRow[3]}
+                              onChange={(e) => handleDetailChange(3, e.target.value)}
+                              className="w-full h-9 pl-8 pr-3 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-semibold text-xs text-[#1d1d1f] bg-white focus:ring-2 focus:ring-[#28CD41]/5"
+                            />
+                            <Building className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#86868b]" />
+                          </div>
+                        </div>
+
+                        {/* Objeto */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Objeto</label>
+                          <textarea
+                            rows={3}
+                            value={selectedRow[4]}
+                            onChange={(e) => handleDetailChange(4, e.target.value)}
+                            className="w-full p-2.5 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-semibold text-xs text-[#1d1d1f] bg-white resize-none leading-normal focus:ring-2 focus:ring-[#28CD41]/5"
+                          />
+                        </div>
+
+                        {/* Observações */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Observações / Despacho</label>
+                          <textarea
+                            rows={3}
+                            value={selectedRow[11]}
+                            onChange={(e) => handleDetailChange(11, e.target.value)}
+                            placeholder="Digite anotações..."
+                            className="w-full p-2.5 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-semibold text-xs text-[#1d1d1f] bg-white resize-none leading-normal focus:ring-2 focus:ring-[#28CD41]/5 placeholder:text-gray-400"
+                          />
+                        </div>
+
+                        {/* Resultado Final */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9.5px] font-bold text-[#86868b] uppercase tracking-wider">Resultado Final</label>
+                          <input
+                            type="text"
+                            value={selectedRow[13] || ""}
+                            onChange={(e) => handleDetailChange(13, e.target.value)}
+                            placeholder="Resultado da tomada..."
+                            className="w-full h-9 px-3 rounded-lg border border-black/[0.06] focus:border-[#28CD41] outline-none font-semibold text-xs text-[#1d1d1f] bg-white focus:ring-2 focus:ring-[#28CD41]/5"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       )}

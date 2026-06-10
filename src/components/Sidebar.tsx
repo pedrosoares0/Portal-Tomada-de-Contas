@@ -29,8 +29,7 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
-  const { activeTab, setActiveTab, activeCommissionFilter, toggleCommissionFilter } = useApp();
-  const [isComissoesOpen, setIsComissoesOpen] = useState(true);
+  const { activeTab, setActiveTab, setIsViagensOpen } = useApp();
   const [isMinimized, setIsMinimized] = useState(true);
 
   // Load minimized state on client side
@@ -61,7 +60,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`sidebar flex-shrink-0 h-full flex flex-col justify-between z-20 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[rgba(245,245,247,0.6)] backdrop-blur-[25px] border-r border-[rgba(0,0,0,0.05)] rounded-[20px] ${isMinimized ? "w-[56px] py-3.5 px-1.5" : "w-[136px] py-3.5 px-2.5"
+      className={`sidebar hidden md:flex flex-shrink-0 h-full flex-col justify-between z-20 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[rgba(245,245,247,0.6)] backdrop-blur-[25px] border-r border-[rgba(0,0,0,0.05)] rounded-[20px] ${isMinimized ? "w-[56px] py-3.5 px-1.5" : "w-[136px] py-3.5 px-2.5"
         }`}
     >
       <div className="flex flex-col gap-4 w-full items-center">
@@ -96,6 +95,8 @@ export default function Sidebar() {
                     onClick={() => {
                       if (item.id === "setafs") {
                         window.open("https://www.google.com/maps/d/u/0/viewer?hl=pt-BR&mid=1jQYv-EgT6W8SrZvi43_ZIl4tCESFRg3d&ll=-13.491084402633808%2C-41.979122&z=6", "_blank");
+                      } else if (item.id === "visitas") {
+                        setIsViagensOpen(true);
                       } else {
                         setActiveTab(item.id);
                       }

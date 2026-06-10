@@ -211,7 +211,7 @@ export default function ViagensModal() {
   if (!isViagensOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-end print:absolute print:inset-0 print:bg-white print:backdrop-blur-none print:z-0">
+    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-[100] flex justify-center items-end md:justify-end md:items-stretch print:absolute print:inset-0 print:bg-white print:backdrop-blur-none print:z-0 animate-in fade-in duration-200">
       {/* Print-specific style override */}
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -263,39 +263,41 @@ export default function ViagensModal() {
       {/* Slide-out Sheet Card / Print Area Container */}
       <div
         id="viagens-print-area-container"
-        className="relative w-full max-w-[850px] h-full bg-[#F8F9FA] shadow-[0_0_50px_rgba(0,0,0,0.08)] border-l border-black/5 p-6 flex flex-col justify-between z-10 animate-in slide-in-from-right duration-300 print:static print:w-full print:shadow-none print:border-none print:p-0 print:m-0 print:bg-white"
+        className="relative w-full max-w-[850px] h-[100dvh] md:h-full bg-[#F8F9FA] shadow-[0_0_50px_rgba(0,0,0,0.08)] border-t md:border-t-0 md:border-l border-black/5 rounded-t-[24px] md:rounded-t-none md:rounded-l-[24px] p-4 sm:p-6 flex flex-col justify-between z-10 animate-in slide-in-from-bottom md:slide-in-from-right duration-300 print:static print:w-full print:shadow-none print:border-none print:p-0 print:m-0 print:bg-white"
       >
+        {/* iOS style handle indicator at the top for mobile bottom sheets */}
+        <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mb-2 md:hidden flex-shrink-0" />
         <div className="flex flex-col gap-6 overflow-y-auto pr-1 custom-scrollbar print:overflow-visible print:pr-0">
 
           {/* Modal Header */}
-          <div className="flex justify-between items-center pb-3 border-b border-black/[0.06] print:hidden">
-            <div>
-              <h2 className="text-sm font-extrabold text-[#1d1d1f] tracking-tight">Relação de Viagens</h2>
-              <p className="text-[10px] text-[#86868b] mt-0.5">Tomada de Contas</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Select Month Pill */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="viagens-month-input" className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">Mês:</label>
-                <input
-                  id="viagens-month-input"
-                  type="month"
-                  value={selectedMonth}
-                  onChange={handleMonthChange}
-                  className="h-7 px-3 text-[11px] font-semibold bg-black/5 rounded-full border-0 outline-none cursor-pointer text-[#2d3142] hover:bg-black/10 transition-colors"
-                />
+          <div className="flex flex-col gap-3 pb-3 border-b border-black/[0.06] print:hidden">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-base md:text-sm font-extrabold text-[#1d1d1f] tracking-tight">Relação de Viagens</h2>
+                <p className="text-[10px] text-[#86868b] mt-0.5">Tomada de Contas</p>
               </div>
               <button
                 onClick={() => setIsViagensOpen(false)}
-                className="p-1.5 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-colors cursor-pointer outline-none border-0"
+                className="p-1.5 rounded-full hover:bg-black/5 text-[#86868b] hover:text-[#1d1d1f] transition-colors cursor-pointer outline-none border-0 flex-shrink-0"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
+            </div>
+            {/* Month selector on its own row on mobile */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="viagens-month-input" className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">Mês:</label>
+              <input
+                id="viagens-month-input"
+                type="month"
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                className="h-8 px-3 text-[12px] font-semibold bg-black/5 rounded-[10px] border-0 outline-none cursor-pointer text-[#2d3142] hover:bg-black/10 transition-colors flex-1 max-w-[220px]"
+              />
             </div>
           </div>
 
           {/* Simulated A4 Paper Sheet container */}
-          <div className="bg-white rounded-2xl border border-black/[0.04] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 sm:p-8 flex flex-col gap-6 print:p-0 print:border-0 print:shadow-none print:rounded-none">
+          <div className="bg-white rounded-2xl border border-black/[0.04] shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-4 sm:p-8 flex flex-col gap-4 sm:gap-6 print:p-0 print:border-0 print:shadow-none print:rounded-none">
 
             {/* Document Header (Logos + Title) */}
             <div className="flex flex-col items-center">
@@ -337,82 +339,84 @@ export default function ViagensModal() {
             </div>
 
             {/* Viagens Spreadsheet Table */}
-            <div className="border border-slate-100 rounded-[12px] bg-white overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.01)] print:border-slate-300 print:rounded-none print:shadow-none">
-              <table className="w-full border-collapse text-xs print:text-[9.5pt]">
-                <thead>
-                  <tr className="bg-[#F8F9FA] text-slate-600 font-bold border-b border-slate-100 print:bg-slate-50 print:border-slate-300">
-                    <th className="p-3 border-r border-slate-100 print:border-slate-300 text-left print:text-slate-700 font-bold uppercase tracking-wider">Comissão</th>
-                    <th className="p-3 border-r border-slate-100 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Convênio</th>
-                    <th className="p-3 border-r border-slate-100 print:border-slate-300 text-left print:text-slate-700 font-bold uppercase tracking-wider">Município</th>
-                    <th className="p-3 border-r border-slate-100 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Data saída</th>
-                    <th className="p-3 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Data retorno</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, rIdx) => (
-                    <tr key={rIdx} className="border-b border-slate-100 print:border-slate-300 print:bg-white odd:bg-white even:bg-slate-50/20 print:even:bg-white">
-                      {row.map((cellVal, cIdx) => (
-                        <td
-                          key={cIdx}
-                          className={`p-1.5 border-r border-slate-100 last:border-r-0 print:border-slate-300 print:p-2.5 ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center" : "text-left"
-                            }`}
-                        >
-                          {/* Screen editing inputs (Fixes backwards typing and cursor jump) */}
-                          <div className="print:hidden">
-                            <input
-                              type="text"
-                              value={cellVal}
-                              onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
-                              onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
-                              placeholder={cIdx === 3 || cIdx === 4 ? "DD/MM" : ""}
-                              className={`w-full bg-transparent border-0 outline-none px-2 py-0.5 text-xs font-semibold ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
-                                } text-slate-700 focus:bg-slate-50/50 rounded transition-all duration-150`}
-                            />
-                          </div>
-
-                          {/* Print static view (Fully displays wrapped text) */}
-                          <div className={`hidden print:block text-slate-800 leading-normal ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left font-sans"
-                            }`}>
-                            {cellVal || "\u00A0"}
-                          </div>
-                        </td>
-                      ))}
+            <div className="w-full overflow-x-auto border border-slate-100 rounded-[12px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.01)] print:border-slate-300 print:rounded-none print:shadow-none custom-scrollbar">
+              <div className="min-w-[620px] md:min-w-0">
+                <table className="w-full border-collapse text-xs print:text-[9.5pt]">
+                  <thead>
+                    <tr className="bg-[#F8F9FA] text-slate-600 font-bold border-b border-slate-100 print:bg-slate-50 print:border-slate-300">
+                      <th className="p-3 border-r border-slate-100 print:border-slate-300 text-left print:text-slate-700 font-bold uppercase tracking-wider">Comissão</th>
+                      <th className="p-3 border-r border-slate-100 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Convênio</th>
+                      <th className="p-3 border-r border-slate-100 print:border-slate-300 text-left print:text-slate-700 font-bold uppercase tracking-wider">Município</th>
+                      <th className="p-3 border-r border-slate-100 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Data saída</th>
+                      <th className="p-3 print:border-slate-300 text-center print:text-slate-700 font-bold uppercase tracking-wider w-24">Data retorno</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, rIdx) => (
+                      <tr key={rIdx} className="border-b border-slate-100 print:border-slate-300 print:bg-white odd:bg-white even:bg-slate-50/20 print:even:bg-white">
+                        {row.map((cellVal, cIdx) => (
+                          <td
+                            key={cIdx}
+                            className={`p-1.5 border-r border-slate-100 last:border-r-0 print:border-slate-300 print:p-2.5 ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center" : "text-left"
+                              }`}
+                          >
+                            {/* Screen editing inputs (Fixes backwards typing and cursor jump) */}
+                            <div className="print:hidden">
+                              <input
+                                type="text"
+                                value={cellVal}
+                                onChange={(e) => handleCellInput(rIdx, cIdx, e.target.value)}
+                                onBlur={(e) => handleCellBlur(rIdx, cIdx, e.target.value)}
+                                placeholder={cIdx === 3 || cIdx === 4 ? "DD/MM" : ""}
+                                className={`w-full bg-transparent border-0 outline-none px-2 py-0.5 text-xs font-semibold ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left"
+                                  } text-slate-700 focus:bg-slate-50/50 rounded transition-all duration-150`}
+                              />
+                            </div>
+  
+                            {/* Print static view (Fully displays wrapped text) */}
+                            <div className={`hidden print:block text-slate-800 leading-normal ${cIdx === 1 || cIdx === 3 || cIdx === 4 ? "text-center font-mono" : "text-left font-sans"
+                              }`}>
+                              {cellVal || "\u00A0"}
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
           </div>
         </div>
 
         {/* Modal Actions Footer */}
-        <div className="flex justify-between items-center pt-4 border-t border-black/5 mt-4 print:hidden">
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-between items-stretch sm:items-center pt-3 sm:pt-4 border-t border-black/5 mt-3 sm:mt-4 print:hidden flex-shrink-0 pb-2 md:pb-0">
+          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:gap-2">
             <button
               onClick={addRow}
-              className="inline-flex items-center gap-1.5 px-4 h-9 bg-black/5 text-[#2d3142] hover:bg-black/10 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 h-9 bg-black/5 text-[#2d3142] hover:bg-black/10 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
             >
               <Plus className="w-3.5 h-3.5" /> Adicionar linha
             </button>
             <button
               onClick={handleClear}
-              className="inline-flex items-center gap-1.5 px-4 h-9 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 h-9 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
             >
               <Trash2 className="w-3.5 h-3.5" /> Limpar Tabela
             </button>
           </div>
 
-          <div className="flex gap-3">
+          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:gap-3">
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-4 h-9 bg-emerald-50 text-[#28cd41] hover:bg-emerald-100/50 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 h-9 bg-emerald-50 text-[#28cd41] hover:bg-emerald-100/50 rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none"
             >
               <Printer className="w-3.5 h-3.5" /> Imprimir tabela
             </button>
             <button
               onClick={handleSave}
-              className="inline-flex items-center gap-1.5 px-5 h-9 bg-[#34C759] text-white hover:bg-[#2fb551] rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none shadow-[0_2px_10px_rgba(52,199,89,0.2)]"
+              className="inline-flex items-center justify-center gap-1.5 px-5 h-9 bg-[#34C759] text-white hover:bg-[#2fb551] rounded-[10px] text-xs font-semibold cursor-pointer border-0 outline-none shadow-[0_2px_10px_rgba(52,199,89,0.2)]"
             >
               <Save className="w-3.5 h-3.5" /> Salvar tabela
             </button>

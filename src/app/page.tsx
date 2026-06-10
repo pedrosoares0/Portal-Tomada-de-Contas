@@ -12,7 +12,8 @@ import SyncModal from "@/components/SyncModal";
 import BentoWidgets from "@/components/BentoWidgets";
 import YearFolders from "@/components/YearFolders";
 import PortariasView from "@/components/PortariasView";
-import { Settings, RefreshCw, ArrowUp, AlertCircle, CheckCircle, FileClock } from "lucide-react";
+import BottomTabBar from "@/components/BottomTabBar";
+import { Settings, RefreshCw, ArrowUp, Plus, AlertCircle, CheckCircle, FileClock } from "lucide-react";
 import { motion } from "framer-motion";
 import { TAB_LABELS } from "@/lib/utils";
 
@@ -28,26 +29,36 @@ function DashboardContent() {
   } = useApp();
 
   return (
-    <div className="app w-full h-screen p-4 flex gap-4 overflow-hidden print:p-0 print:h-auto print:overflow-visible">
+    <div className="app w-full h-screen p-0 md:p-4 flex flex-col md:flex-row gap-0 md:gap-4 overflow-hidden print:p-0 print:h-auto print:overflow-visible">
       {/* Finder Sidebar */}
       <Sidebar />
 
       {/* Main Panel Content Container */}
-      <main className="main flex flex-col flex-1 h-full min-w-0 overflow-hidden gap-4 print:h-auto print:overflow-visible">
+      <main className="main flex flex-col flex-1 h-full min-w-0 overflow-hidden gap-3 md:gap-4 p-3 md:p-0 pb-[96px] md:pb-0 print:h-auto print:overflow-visible">
         <div className="center-column flex flex-col flex-1 min-h-0 gap-4 print:h-auto print:overflow-visible">
           
           {/* Topbar Header Dashboard Control Panel */}
-          <div className="topbar flex items-center gap-3 py-1 pb-3 print:hidden">
+          <div className="topbar flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-1 pb-2 md:pb-3 print:hidden w-full overflow-hidden">
             
             {/* Header Brand */}
-            <div className="header-brand-container flex items-center gap-3">
+            <div className="header-brand-container flex items-center gap-3 flex-shrink-0">
               <div className="section-icon flex items-center justify-center hover:scale-105 transition-transform duration-200 relative p-1">
+                {/* Mobile: TCE Logo (larger for native feel) */}
+                <Image
+                  src="/imagens/logotce.png"
+                  alt="TCE - Tribunal de Contas"
+                  width={52}
+                  height={52}
+                  className="block md:hidden drop-shadow-[0_4px_8px_rgba(40,205,65,0.15)]"
+                  unoptimized
+                />
+                {/* Desktop: Original Control icon */}
                 <Image
                   src="/imagens/logo-controle-tomada.png?v=2"
                   alt="Controle de Tomada de Contas"
                   width={36}
                   height={36}
-                  className="block drop-shadow-[0_4px_8px_rgba(40,205,65,0.15)]"
+                  className="hidden md:block drop-shadow-[0_4px_8px_rgba(40,205,65,0.15)]"
                   unoptimized
                 />
                 {(isLoading || isSyncing) && (
@@ -58,60 +69,61 @@ function DashboardContent() {
                 )}
               </div>
               <div className="section-title flex flex-col leading-tight select-none">
-                <div className="text-[9.5px] text-[#28cd41] font-bold uppercase tracking-wider">
+                <div className="text-[11px] md:text-[9.5px] text-[#28cd41] font-bold uppercase tracking-wider">
                   {TAB_LABELS[activeTab] || "Início"}
                 </div>
-                <h1 className="text-sm font-black text-[#1d1d1f] tracking-tight mt-0.5">Tomada de Contas</h1>
+                <h1 className="text-base md:text-sm font-black text-[#1d1d1f] tracking-tight mt-0.5">Tomada de Contas</h1>
               </div>
             </div>
 
-            {/* Spotlight Search */}
-            {activeTab === "inicio" && <SpotlightSearch />}
-
-            {/* Table Action Buttons */}
+            {/* Spotlight Search & Table Action Buttons */}
             {activeTab === "inicio" && (
-              <div className="table-actions flex items-center gap-2 flex-shrink-0">
-                <motion.button
-                  onClick={addRecord}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  className="btn-nova-tomada relative overflow-hidden inline-flex justify-center items-center gap-0 bg-gradient-to-b from-[#30D158] to-[#28CD41] text-white font-bold text-[11px] h-[32px] px-4 rounded-[8px] border border-white/20 cursor-pointer shadow-[0_2px_6px_rgba(40,205,65,0.2),0_1px_2px_rgba(40,205,65,0.08)] hover:shadow-[0_4px_12px_rgba(40,205,65,0.3),0_2px_4px_rgba(40,205,65,0.12)] transition-all duration-200 outline-none group"
-                  type="button"
-                >
-                  {/* Sliding Sheen sweep — left to right on hover */}
-                  <span className="pointer-events-none absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-[20deg] -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] z-10" />
-                  <span className="relative z-10 tracking-[-0.01em]">Nova Tomada</span>
-                  {/* Arrow — hidden by default, slides in on hover */}
-                  <ArrowUp className="w-3 h-3 relative z-10 ml-0 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-1 transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]" />
-                </motion.button>
+              <div className="flex items-center gap-2 flex-1 justify-end w-full overflow-x-auto custom-scrollbar flex-nowrap py-1">
+                <SpotlightSearch />
+                <div className="table-actions flex items-center gap-2 flex-shrink-0">
+                  {/* Nova Tomada: compact icon on mobile, full label on desktop */}
+                  <motion.button
+                    onClick={addRecord}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    className="btn-nova-tomada relative overflow-hidden inline-flex justify-center items-center gap-0 bg-gradient-to-b from-[#30D158] to-[#28CD41] text-white font-bold text-[11px] h-[32px] w-[32px] md:w-auto md:px-4 rounded-[10px] md:rounded-[8px] border border-white/20 cursor-pointer shadow-[0_2px_6px_rgba(40,205,65,0.2),0_1px_2px_rgba(40,205,65,0.08)] hover:shadow-[0_4px_12px_rgba(40,205,65,0.3),0_2px_4px_rgba(40,205,65,0.12)] transition-all duration-200 outline-none group"
+                    type="button"
+                  >
+                    <span className="pointer-events-none absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-[20deg] -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] z-10" />
+                    <Plus className="w-4 h-4 relative z-10 md:hidden" />
+                    <span className="relative z-10 tracking-[-0.01em] hidden md:inline">Nova Tomada</span>
+                    <ArrowUp className="w-3 h-3 relative z-10 ml-0 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:ml-1 transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:block" />
+                  </motion.button>
 
-                <motion.button
-                  onClick={() => fetchSheetData(true)}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  className="btn inline-flex items-center gap-1.5 px-3 h-[32px] bg-white/80 hover:bg-white border border-black/[0.06] hover:border-black/[0.1] rounded-[8px] text-[11px] font-semibold text-[#374151] cursor-pointer outline-none shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.05)] transition-all duration-150"
-                  type="button"
-                >
-                  <RefreshCw className={`w-3 h-3 text-[#6B7280] ${isLoading ? "animate-spin text-emerald-500" : ""}`} />
-                  <span>Recarregar Planilha</span>
-                </motion.button>
+                  {/* Recarregar: icon-only on mobile, full label on desktop */}
+                  <motion.button
+                    onClick={() => fetchSheetData(true)}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    className="btn inline-flex items-center justify-center gap-1.5 px-0 md:px-3 w-[32px] md:w-auto h-[32px] bg-white/80 hover:bg-white border border-black/[0.06] hover:border-black/[0.1] rounded-[10px] md:rounded-[8px] text-[11px] font-semibold text-[#374151] cursor-pointer outline-none shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.05)] transition-all duration-150"
+                    type="button"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 md:w-3 md:h-3 text-[#6B7280] ${isLoading ? "animate-spin text-emerald-500" : ""}`} />
+                    <span className="hidden md:inline">Recarregar Planilha</span>
+                  </motion.button>
 
-                <motion.button
-                  onClick={() => setIsSyncOpen(true)}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  title="Configurar Sincronização Google Sheets"
-                  className="btn-icon p-1.5 bg-white/80 hover:bg-white border border-black/[0.06] hover:border-black/[0.1] rounded-[8px] text-[#374151] cursor-pointer outline-none shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.05)] transition-all duration-150 flex items-center justify-center h-[32px] w-[32px]"
-                  type="button"
-                >
-                  <Settings className={`w-3.5 h-3.5 text-[#6B7280] ${isSyncing ? "animate-pulse text-amber-500" : ""}`} />
-                </motion.button>
+                  <motion.button
+                    onClick={() => setIsSyncOpen(true)}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    title="Configurar Sincronização Google Sheets"
+                    className="btn-icon p-1.5 bg-white/80 hover:bg-white border border-black/[0.06] hover:border-black/[0.1] rounded-[10px] md:rounded-[8px] text-[#374151] cursor-pointer outline-none shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.05)] transition-all duration-150 flex items-center justify-center h-[32px] w-[32px]"
+                    type="button"
+                  >
+                    <Settings className={`w-3.5 h-3.5 text-[#6B7280] ${isSyncing ? "animate-pulse text-amber-500" : ""}`} />
+                  </motion.button>
+                </div>
               </div>
             )}
 
             {/* Dynamic page-specific header portal slot */}
             {activeTab !== "inicio" && (
-              <div id="topbar-actions-slot" className="flex items-center gap-2 ml-auto min-w-0" />
+              <div id="topbar-actions-slot" className="flex items-center gap-2 md:ml-auto min-w-0 overflow-x-auto custom-scrollbar flex-nowrap py-1 w-full sm:w-auto" />
             )}
           </div>
 
@@ -139,10 +151,15 @@ function DashboardContent() {
             )}
           </section>
 
-          {/* Footer Bento Widgets Grid */}
-          <BentoWidgets />
+          {/* Footer Bento Widgets Grid - Hidden when in sub-pages on mobile (navbar suffices) */}
+          <div className={`${activeTab !== "inicio" ? "hidden md:block" : ""}`}>
+            <BentoWidgets />
+          </div>
         </div>
       </main>
+
+      {/* Bottom navigation menu on mobile */}
+      <BottomTabBar />
 
       {/* Slideout Modals */}
       <ViagensModal />
